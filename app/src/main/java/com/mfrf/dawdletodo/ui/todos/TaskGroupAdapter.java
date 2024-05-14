@@ -1,6 +1,7 @@
 package com.mfrf.dawdletodo.ui.todos;
 
 import android.content.Context;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,17 +9,23 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.fragment.app.FragmentActivity;
+
+import com.mfrf.dawdletodo.ActivityTaskGroupEditor;
+import com.mfrf.dawdletodo.MainActivity;
 import com.mfrf.dawdletodo.R;
 
 import java.util.List;
 
 public class TaskGroupAdapter extends BaseAdapter {
+    private final List<ItemDataEntry> itemList;
     private Context context;
-    private List<ItemData> itemList;
+    private final FragmentActivity activity;
 
-    public TaskGroupAdapter(Context context, List<ItemData> itemList) {
+    public TaskGroupAdapter(Context context, List<ItemDataEntry> itemList, FragmentActivity activity) {
         this.context = context;
         this.itemList = itemList;
+        this.activity = activity;
     }
 
     @Override
@@ -47,7 +54,7 @@ public class TaskGroupAdapter extends BaseAdapter {
 
             // 创建 ViewHolder 对象并保存视图组件的引用
             viewHolder = new ViewHolder();
-            viewHolder.imageView = convertView.findViewById(R.id.imageView);
+            viewHolder.imageView = convertView.findViewById(R.id.task_image);
             viewHolder.textView1 = convertView.findViewById(R.id.textView1);
             viewHolder.textView2 = convertView.findViewById(R.id.textView2);
 
@@ -59,7 +66,7 @@ public class TaskGroupAdapter extends BaseAdapter {
         }
 
         // 获取当前位置的数据项
-        ItemData item = itemList.get(position);
+        ItemDataEntry item = itemList.get(position);
 
         // 设置 ImageView 的图片资源
         viewHolder.imageView.setImageResource(item.getImageResId());
@@ -68,8 +75,16 @@ public class TaskGroupAdapter extends BaseAdapter {
         viewHolder.textView1.setText(item.getId());
         viewHolder.textView2.setText(item.getDescribe());
 
+
+        convertView.setOnClickListener(view -> {
+            ((MainActivity) activity).build_intent.accept(Pair.create(intent -> {
+                        intent.putExtra("id", item.getId());
+                    },
+                    ActivityTaskGroupEditor.class));
+        });
         return convertView;
     }
+
 
     static class ViewHolder {
         ImageView imageView;
@@ -78,26 +93,3 @@ public class TaskGroupAdapter extends BaseAdapter {
     }
 }
 
-class ItemData {
-    private int imageResId;
-    private String id;
-    private String describe;
-
-    public ItemData(int imageResId, String id, String describe) {
-        this.imageResId = imageResId;
-        this.id = id;
-        this.describe = describe;
-    }
-
-    public int getImageResId() {
-        return imageResId;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getDescribe() {
-        return describe;
-    }
-}

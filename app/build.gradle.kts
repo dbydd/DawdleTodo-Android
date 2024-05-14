@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId = "com.mfrf.dawdletodo"
-        minSdk = 24
+        minSdk = 33
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -43,4 +43,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.17.1")
+//    implementation("org.xerial:sqlite-jdbc:3.45.3.0")
+    implementation("org.iq80.leveldb:leveldb:0.12")
+
 }

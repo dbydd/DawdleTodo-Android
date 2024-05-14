@@ -1,25 +1,37 @@
 package com.mfrf.dawdletodo;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
+import android.util.Pair;
 import android.view.Menu;
+import android.view.View;
 
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.navigation.NavigationView;
-
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.mfrf.dawdletodo.databinding.ActivityMainBinding;
+
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
+    public final Consumer<Pair<Consumer<Intent>, Class<? extends AppCompatActivity>>> build_intent = pair -> {
+        Intent intent = new Intent(MainActivity.this, pair.second);
+
+        pair.first.accept(intent);
+
+        startActivity(intent);
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

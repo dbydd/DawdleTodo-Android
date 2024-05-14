@@ -1,41 +1,80 @@
 package com.mfrf.dawdletodo.data_center;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
-import com.mfrf.dawdletodo.model.TaskGroup;
+import com.mfrf.dawdletodo.exceptions.AddTaskError;
+import com.mfrf.dawdletodo.model.Task;
+import com.mfrf.dawdletodo.model.TaskTreeManager;
+import com.mfrf.dawdletodo.model.task_container.AbstractTaskContainer;
+import com.mfrf.dawdletodo.model.task_container.DailyTaskContainer;
+import com.mfrf.dawdletodo.model.task_container.PriorityBasedTaskContainer;
+import com.mfrf.dawdletodo.model.task_container.SingleTaskContainer;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@RequiresApi(api = Build.VERSION_CODES.O)
 public enum MemoryDataBase {
     INSTANCE();
-    private final HashMap<String, TaskGroup> TASK_GROUPS = new HashMap<>();
+    private final HashMap<String, TaskTreeManager> TASK_GROUPS = new HashMap<>();
 
-    static {
-        for (int i = 1; i <11; i++) {
-            MemoryDataBase.INSTANCE.add_task_group(new TaskGroup("task_"+i,LocalDate.of(2024,i,1),LocalDate.of(2024,i+1,1)));
+    {
+        TaskTreeManager test = new TaskTreeManager("test");
+        try {
+            //functional programming time!!!!!
+            test
+                    .addTo("root",
+                            new PriorityBasedTaskContainer("test_prio",
+                                    new DailyTaskContainer("test_daily_task",
+                                            new SingleTaskContainer(new Task("test_single_task_in_daily_task", "balabala", 114, LocalDate.now(), LocalDate.now(), Integer.MAX_VALUE)),
+                                            new PriorityBasedTaskContainer("test_prio_task_in_daily_task",
+                                                    new PriorityBasedTaskContainer("test_prio_task_in_prio_task",
+                                                            new SingleTaskContainer(new Task("test_single_task_in_prio_prio", "eaaaaaaa", 514, LocalDate.now(), LocalDate.now(), Integer.MAX_VALUE)),
+                                                            new SingleTaskContainer(new Task("test_single_task_in_prio_prio_2", "henghenghengaaaaaa", 1919, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 1), 16))
+                                                    ),
+                                                    new SingleTaskContainer(new Task("test_single_task_in_prio", "mulimomuli", 810, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 1), 24))
+                                            )
+                                    )
+                            ))
+                    .addTo("root",
+                            new DailyTaskContainer("test_daily_task_2",
+                                    new SingleTaskContainer(new Task("test_single_task_in_daily_2", "mulimomuli", 114514, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 1), Integer.MAX_VALUE)),
+                                    new SingleTaskContainer(new Task("test_single_task_in_daily_3", "mulimomuli", 1919, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 1), Integer.MAX_VALUE))
+                            )
+                    )
+                    .addTo("test_daily_task_2",
+                            new SingleTaskContainer(new Task("test_single_task_add_later", "mulimomuli", 810, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 1), Integer.MAX_VALUE))
+                    );
+        } catch (AddTaskError e) {
+            throw new RuntimeException(e);
         }
+        this.TASK_GROUPS.put("test", test);
     }
 
-    public TaskGroup get_task_group(String id) {
-        return this.TASK_GROUPS.get(id);
+    public void compute(String key, BiFunction<? super String, ? super TaskTreeManager, ? extends TaskTreeManager> create_closure) {
+        TaskTreeManager abstractTaskContainer = this.TASK_GROUPS.compute(key, create_closure);
     }
 
-    public TaskGroup remove_task_group(String id){
+    public TaskTreeManager remove_task_group(String id) {
         return this.TASK_GROUPS.remove(id);
     }
 
-    public boolean add_task_group(TaskGroup g){
-        return this.TASK_GROUPS.put(g.getGroup_id(),g) == null;
+    public boolean add_task_container(AbstractTaskContainer g, String parent_node, String tree_id) {
+        this.TASK_GROUPS.compute(tree_id, (s, taskTreeManager) -> {
+            //todo solve errors
+            try {
+                return (taskTreeManager == null ? new TaskTreeManager(tree_id) : taskTreeManager).addTo(parent_node, g);
+            } catch (AddTaskError.CannotAddToSingleTaskContainerError e) {
+                throw new RuntimeException(e);
+            } catch (AddTaskError e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return false;
     }
 
-    public <T> List<T> request(Function<TaskGroup,T> f){
+    public <T> List<T> request(Function<TaskTreeManager, T> f) {
         return this.TASK_GROUPS.values().stream().map(f).collect(Collectors.toList());
     }
 }

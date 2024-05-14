@@ -10,6 +10,7 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.mfrf.dawdletodo.R;
@@ -31,9 +32,11 @@ public class TodoFragment extends Fragment {
         View root = binding.getRoot();
 
         ListView todoGroups = binding.todoGroups;
+        FragmentActivity activity = getActivity();
         todoGroups.setAdapter(
                 new TaskGroupAdapter(
-                        getContext(), MemoryDataBase.INSTANCE.request((g) -> new ItemData(R.drawable.todos, g.getGroup_id(), g.getGroup_id()))
+                        getContext(), MemoryDataBase.INSTANCE.request((g) -> new ItemDataEntry(R.drawable.todos, g.getGroup_id(), g.getGroup_id())),
+                        activity
                 )
         );
 
