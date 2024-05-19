@@ -14,17 +14,19 @@ import androidx.fragment.app.FragmentActivity;
 import com.mfrf.dawdletodo.ActivityTaskGroupEditor;
 import com.mfrf.dawdletodo.MainActivity;
 import com.mfrf.dawdletodo.R;
+import com.mfrf.dawdletodo.data_center.MemoryDataBase;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TaskGroupAdapter extends BaseAdapter {
-    private final List<ItemDataEntry> itemList;
+    private final List<TaskGroupDataEntry> itemList;
     private Context context;
     private final FragmentActivity activity;
 
-    public TaskGroupAdapter(Context context, List<ItemDataEntry> itemList, FragmentActivity activity) {
+    public TaskGroupAdapter(Context context, FragmentActivity activity) {
         this.context = context;
-        this.itemList = itemList;
+        this.itemList = MemoryDataBase.INSTANCE.TASK_GROUPS.entrySet().stream().map(kv->new TaskGroupDataEntry(R.drawable.todos,kv.getKey(),"tasks: "+kv.getValue().countItems())).collect(Collectors.toList());
         this.activity = activity;
     }
 
@@ -55,8 +57,8 @@ public class TaskGroupAdapter extends BaseAdapter {
             // 创建 ViewHolder 对象并保存视图组件的引用
             viewHolder = new ViewHolder();
             viewHolder.imageView = convertView.findViewById(R.id.task_image);
-            viewHolder.textView1 = convertView.findViewById(R.id.textView1);
-            viewHolder.textView2 = convertView.findViewById(R.id.textView2);
+            viewHolder.textView1 = convertView.findViewById(R.id.task_group_name);
+            viewHolder.textView2 = convertView.findViewById(R.id.task_group_describe);
 
             // 将 ViewHolder 对象保存在 convertView 中
             convertView.setTag(viewHolder);
@@ -66,7 +68,7 @@ public class TaskGroupAdapter extends BaseAdapter {
         }
 
         // 获取当前位置的数据项
-        ItemDataEntry item = itemList.get(position);
+        TaskGroupDataEntry item = itemList.get(position);
 
         // 设置 ImageView 的图片资源
         viewHolder.imageView.setImageResource(item.getImageResId());

@@ -35,7 +35,7 @@ public class TodoFragment extends Fragment {
         FragmentActivity activity = getActivity();
         todoGroups.setAdapter(
                 new TaskGroupAdapter(
-                        getContext(), MemoryDataBase.INSTANCE.request((g) -> new ItemDataEntry(R.drawable.todos, g.getGroup_id(), g.getGroup_id())),
+                        getContext(),
                         activity
                 )
         );

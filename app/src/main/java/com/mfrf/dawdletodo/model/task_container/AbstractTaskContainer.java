@@ -10,7 +10,9 @@ import com.mfrf.dawdletodo.model.Task;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 public abstract class AbstractTaskContainer implements Comparable<AbstractTaskContainer> {
     private final String group_id;
@@ -26,8 +28,9 @@ public abstract class AbstractTaskContainer implements Comparable<AbstractTaskCo
 
 
     public int peek_priority() {
-        Task task = peek_task();
-        return
+        Optional<Task> o_task = peek_task();
+        return o_task.isPresent() ? o_task.map(task ->
+
                 PriorityModifiers.SimpleCompleteTimeModifier(
                         task.isInfini_long() ?
                                 task.getInitial_priority()
@@ -35,15 +38,16 @@ public abstract class AbstractTaskContainer implements Comparable<AbstractTaskCo
                                 PriorityModifiers.SimpleDeadlinePriorityModifier(
                                         task.getInitial_priority(), task.getBegin_date(), task.getEnd_date(), LocalDate.now()
                                 ),
-                        task.getExpected_complete_times(), task.getCompleteTimes()
-                );
+                        task.getExpected_complete_times(), task.getCompleteTimes())
+        ).get() : 0;
     }
 
     @NonNull
     protected abstract Collection<AbstractTaskContainer> peekTaskGroups();
 
-    public Task peek_task() {
-        return this.peekTaskGroups().stream().max(Comparator.naturalOrder()).get().peek_task();
+    public Optional<Task> peek_task() {
+        Optional<AbstractTaskContainer> max = this.peekTaskGroups().stream().filter(Objects::nonNull).max(Comparator.naturalOrder());
+        return max.isPresent() ? max.get().peek_task() : Optional.empty();
     }
 
     @Override
@@ -51,17 +55,29 @@ public abstract class AbstractTaskContainer implements Comparable<AbstractTaskCo
         return this.peek_priority() - o.peek_priority();
     }
 
+
     @Nullable
     public AbstractTaskContainer find(String id) {
         if (Objects.equals(id, this.group_id)) {
             return this;
         }
 
-        return peekTaskGroups().parallelStream().map(container -> container.find(id)).filter(Objects::nonNull).findAny().get();
+        Optional<AbstractTaskContainer> any = peekTaskGroups().stream().map(container -> container.find(id)).filter(Objects::nonNull).findAny();
+        return any.orElse(null);
 
     }
 
     public abstract AbstractTaskContainer markAsDone();
 
     public abstract AbstractTaskContainer add(AbstractTaskContainer container) throws AddTaskError.CannotAddToSingleTaskContainerError;
+
+    public abstract String getTypeID();
+
+    public Map<String, Integer> countItems(Map<String, Integer> in) {
+        in.compute(getTypeID(), (id, before) ->
+                before == null ? 0 : before + 1
+        );
+        this.peekTaskGroups().stream().forEach(c -> c.countItems(in));
+        return in;
+    }
 }

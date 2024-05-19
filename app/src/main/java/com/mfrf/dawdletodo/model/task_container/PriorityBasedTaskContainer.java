@@ -37,4 +37,9 @@ public class PriorityBasedTaskContainer extends AbstractTaskContainer {
         prio_que.add(container);
         return container;
     }
+
+    @Override
+    public String getTypeID() {
+        return "Priority Based";
+    }
 }

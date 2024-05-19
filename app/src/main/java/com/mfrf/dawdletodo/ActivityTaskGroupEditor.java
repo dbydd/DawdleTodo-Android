@@ -7,9 +7,6 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.mfrf.dawdletodo.data_center.MemoryDataBase;
-import com.mfrf.dawdletodo.ui.todos.ItemDataEntry;
-
 public class ActivityTaskGroupEditor extends AppCompatActivity {
     private EditText editText1;
     private EditText editText2;

@@ -38,4 +38,9 @@ public class DailyTaskContainer extends AbstractTaskContainer {
         round_robin_queue.add(container);
         return container;
     }
+
+    @Override
+    public String getTypeID() {
+        return "Daily Task";
+    }
 }

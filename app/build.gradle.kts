@@ -45,7 +45,7 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
 
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.1")
-//    implementation("org.xerial:sqlite-jdbc:3.45.3.0")
-    implementation("org.iq80.leveldb:leveldb:0.12")
+////    implementation("org.xerial:sqlite-jdbc:3.45.3.0")
+//    implementation("org.iq80.leveldb:leveldb:0.12")
 
 }

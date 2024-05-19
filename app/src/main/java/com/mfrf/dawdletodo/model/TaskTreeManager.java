@@ -8,6 +8,9 @@ import com.mfrf.dawdletodo.exceptions.AddTaskError;
 import com.mfrf.dawdletodo.model.task_container.AbstractTaskContainer;
 import com.mfrf.dawdletodo.model.task_container.DailyTaskContainer;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TaskTreeManager {
     private final AbstractTaskContainer root;
     private final String configID;
@@ -41,5 +44,12 @@ public class TaskTreeManager {
     public static TaskTreeManager fromJSON(String json) throws JsonProcessingException {
         ObjectReader reader = new ObjectMapper().reader();
         return reader.readValue(json);
+    }
+
+    public String countItems() {
+//        return this.root.countItems(new HashMap<>()).entrySet().stream().map(entry->entry.getKey() + ": " + entry.getValue().toString()).reduce((acc,current)->
+//            acc + "\n" + current
+//        ).get();
+        return this.root.countItems(new HashMap<>()).get("Single Task").toString();
     }
 }

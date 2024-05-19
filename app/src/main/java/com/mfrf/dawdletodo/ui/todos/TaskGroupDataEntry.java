@@ -1,11 +1,11 @@
 package com.mfrf.dawdletodo.ui.todos;
 
-public class ItemDataEntry {
+public class TaskGroupDataEntry {
     private int imageResId;
     private String id;
     private String describe;
 
-    public ItemDataEntry(int imageResId, String id, String describe) {
+    public TaskGroupDataEntry(int imageResId, String id, String describe) {
         this.imageResId = imageResId;
         this.id = id;
         this.describe = describe;

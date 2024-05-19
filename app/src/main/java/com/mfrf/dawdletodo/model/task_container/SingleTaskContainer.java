@@ -7,6 +7,8 @@ import com.mfrf.dawdletodo.model.Task;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class SingleTaskContainer extends AbstractTaskContainer {
 
@@ -17,11 +19,9 @@ public class SingleTaskContainer extends AbstractTaskContainer {
         this.task = task;
     }
 
-    @Nullable
     @Override
     protected Collection<AbstractTaskContainer> peekTaskGroups() {
         List<AbstractTaskContainer> abstractTaskContainers = new java.util.ArrayList<>();
-        abstractTaskContainers.add(this);
         return abstractTaskContainers;
     }
 
@@ -34,5 +34,21 @@ public class SingleTaskContainer extends AbstractTaskContainer {
     @Override
     public AbstractTaskContainer add(AbstractTaskContainer container) throws AddTaskError.CannotAddToSingleTaskContainerError {
         throw new AddTaskError.CannotAddToSingleTaskContainerError();
+    }
+
+    @Override
+    public Optional<Task> peek_task() {
+        return Optional.of(this.task);
+    }
+
+    @Nullable
+    @Override
+    public AbstractTaskContainer find(String id) {
+        return Objects.equals(id, this.getGroup_id()) ?this:null;
+    }
+
+    @Override
+    public String getTypeID() {
+        return "Single Task";
     }
 }

@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 public enum MemoryDataBase {
     INSTANCE();
-    private final HashMap<String, TaskTreeManager> TASK_GROUPS = new HashMap<>();
+    public final HashMap<String, TaskTreeManager> TASK_GROUPS = new HashMap<>();
 
     {
         TaskTreeManager test = new TaskTreeManager("test");
@@ -74,7 +74,4 @@ public enum MemoryDataBase {
         return false;
     }
 
-    public <T> List<T> request(Function<TaskTreeManager, T> f) {
-        return this.TASK_GROUPS.values().stream().map(f).collect(Collectors.toList());
-    }
 }
