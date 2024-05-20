@@ -7,7 +7,7 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class ActivityTaskGroupEditor extends AppCompatActivity {
+public class ActivityTaskContainer extends AppCompatActivity {
     private EditText editText1;
     private EditText editText2;
     private Button addButton;
@@ -15,9 +15,10 @@ public class ActivityTaskGroupEditor extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_task_group_editor);
+        setContentView(R.layout.activity_task_container);
         Intent intent = getIntent();
         String id = intent.getStringExtra("id");
+
 //        MemoryDataBase.INSTANCE(id, (except_id, maybe_null_Abstract_taskContainer) -> {
 //
 //

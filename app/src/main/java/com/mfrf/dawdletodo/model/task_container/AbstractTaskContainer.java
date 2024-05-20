@@ -22,7 +22,7 @@ public abstract class AbstractTaskContainer implements Comparable<AbstractTaskCo
         group_id = groupId;
     }
 
-    public String getGroup_id() {
+    public String getContainerID() {
         return group_id;
     }
 

@@ -3,7 +3,7 @@ package com.mfrf.dawdletodo.model;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Task implements Serializable {
+public class Task implements Serializable,Cloneable {
     private final String id;
     private final String description;
     private final int initial_priority;
@@ -60,5 +60,15 @@ public class Task implements Serializable {
 
     public LocalDate getEnd_date() {
         return end_date;
+    }
+
+    @Override
+    public Task clone() {
+        try {
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return (Task) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

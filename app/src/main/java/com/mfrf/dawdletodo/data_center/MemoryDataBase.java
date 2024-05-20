@@ -11,7 +11,9 @@ import com.mfrf.dawdletodo.model.task_container.SingleTaskContainer;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -72,6 +74,10 @@ public enum MemoryDataBase {
             }
         });
         return false;
+    }
+
+    public Optional<AbstractTaskContainer> query(String taskGroup,String taskContainer){
+        return this.TASK_GROUPS.containsKey(taskGroup) ? Optional.of(TASK_GROUPS.get(taskGroup).find(taskContainer)) : Optional.empty();
     }
 
 }

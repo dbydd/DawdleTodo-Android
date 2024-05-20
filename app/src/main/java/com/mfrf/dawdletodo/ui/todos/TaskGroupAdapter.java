@@ -6,15 +6,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.FragmentActivity;
 
-import com.mfrf.dawdletodo.ActivityTaskGroupEditor;
+import com.mfrf.dawdletodo.ActivityTaskContainer;
 import com.mfrf.dawdletodo.MainActivity;
 import com.mfrf.dawdletodo.R;
 import com.mfrf.dawdletodo.data_center.MemoryDataBase;
+import com.mfrf.dawdletodo.model.task_container.AbstractTaskContainer;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +28,7 @@ public class TaskGroupAdapter extends BaseAdapter {
 
     public TaskGroupAdapter(Context context, FragmentActivity activity) {
         this.context = context;
-        this.itemList = MemoryDataBase.INSTANCE.TASK_GROUPS.entrySet().stream().map(kv->new TaskGroupDataEntry(R.drawable.todos,kv.getKey(),"tasks: "+kv.getValue().countItems())).collect(Collectors.toList());
+        this.itemList = MemoryDataBase.INSTANCE.TASK_GROUPS.entrySet().stream().map(kv -> Pair.create(kv, kv.getValue().advice())).filter(p -> p.second.isPresent()).map(p -> new TaskGroupDataEntry(R.drawable.todos, p.first.getKey(), "tasks: " + p.first.getValue().countItems(), p.second.get().second.clone(), p.second.get().first)).collect(Collectors.toList());
         this.activity = activity;
     }
 
@@ -51,47 +53,46 @@ public class TaskGroupAdapter extends BaseAdapter {
         ViewHolder viewHolder;
 
         if (convertView == null) {
-            // 使用 item 模板创建新的视图
             convertView = LayoutInflater.from(context).inflate(R.layout.task_group_item, parent, false);
 
-            // 创建 ViewHolder 对象并保存视图组件的引用
             viewHolder = new ViewHolder();
-            viewHolder.imageView = convertView.findViewById(R.id.task_image);
-            viewHolder.textView1 = convertView.findViewById(R.id.task_group_name);
-            viewHolder.textView2 = convertView.findViewById(R.id.task_group_describe);
+            viewHolder.logo = convertView.findViewById(R.id.task_logo);
+            viewHolder.group_describe = convertView.findViewById(R.id.task_group_describe);
+            viewHolder.task_desc = convertView.findViewById(R.id.task_desc);
+            viewHolder.complete_current_task = convertView.findViewById(R.id.complete_current_task);
 
-            // 将 ViewHolder 对象保存在 convertView 中
             convertView.setTag(viewHolder);
         } else {
-            // 从 convertView 中获取之前保存的 ViewHolder 对象
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        // 获取当前位置的数据项
         TaskGroupDataEntry item = itemList.get(position);
 
-        // 设置 ImageView 的图片资源
-        viewHolder.imageView.setImageResource(item.getImageResId());
+        viewHolder.logo.setImageResource(item.getImageResId());
+        viewHolder.group_describe.setText(item.getDescribe());
+        viewHolder.task_desc.setText(item.getTaskDesc());
 
-        // 设置 TextView1 和 TextView2 的文本内容
-        viewHolder.textView1.setText(item.getId());
-        viewHolder.textView2.setText(item.getDescribe());
+        viewHolder.complete_current_task.setOnClickListener(view -> {
+            MemoryDataBase.INSTANCE.query(item.getGroupID(), item.getTaskContainerID()).ifPresent(AbstractTaskContainer::markAsDone);
+        });
 
 
-        convertView.setOnClickListener(view -> {
+        convertView.findViewById(R.id.actually_button_to_lower).setOnClickListener(view -> {
             ((MainActivity) activity).build_intent.accept(Pair.create(intent -> {
-                        intent.putExtra("id", item.getId());
+                        intent.putExtra("id", item.getGroupID());
                     },
-                    ActivityTaskGroupEditor.class));
+                    ActivityTaskContainer.class));
         });
         return convertView;
     }
 
 
     static class ViewHolder {
-        ImageView imageView;
-        TextView textView1;
-        TextView textView2;
+        ImageView logo;
+        TextView group_describe;
+
+        TextView task_desc;
+        Button complete_current_task;
     }
 }
 

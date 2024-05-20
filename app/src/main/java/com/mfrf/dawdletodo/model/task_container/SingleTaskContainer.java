@@ -44,7 +44,7 @@ public class SingleTaskContainer extends AbstractTaskContainer {
     @Nullable
     @Override
     public AbstractTaskContainer find(String id) {
-        return Objects.equals(id, this.getGroup_id()) ?this:null;
+        return Objects.equals(id, this.getContainerID()) ?this:null;
     }
 
     @Override
