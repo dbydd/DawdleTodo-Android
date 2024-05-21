@@ -1,4 +1,4 @@
-package com.mfrf.dawdletodo.ui.todos;
+package com.mfrf.dawdletodo.ui;
 
 import android.content.Context;
 import android.util.Pair;
@@ -15,31 +15,32 @@ import androidx.fragment.app.FragmentActivity;
 import com.mfrf.dawdletodo.ActivityTaskContainer;
 import com.mfrf.dawdletodo.MainActivity;
 import com.mfrf.dawdletodo.R;
-import com.mfrf.dawdletodo.data_center.MemoryDataBase;
+import com.mfrf.dawdletodo.model.Task;
 import com.mfrf.dawdletodo.model.task_container.AbstractTaskContainer;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
-public class TaskGroupAdapter extends BaseAdapter {
-    private final List<TaskGroupDataEntry> itemList;
-    private Context context;
+public class TaskContainerAdapter extends BaseAdapter {
+    private final Context context;
     private final FragmentActivity activity;
+    private AbstractTaskContainer container;
+    private final String groupID;
 
-    public TaskGroupAdapter(Context context, FragmentActivity activity) {
+    public TaskContainerAdapter(Context context, FragmentActivity activity, AbstractTaskContainer container, String groupID) {
         this.context = context;
-        this.itemList = MemoryDataBase.INSTANCE.TASK_GROUPS.entrySet().stream().map(kv -> Pair.create(kv, kv.getValue().advice())).filter(p -> p.second.isPresent()).map(p -> new TaskGroupDataEntry(R.drawable.todos, p.first.getKey(), "tasks: " + p.first.getValue().countItems(), p.second.get().second.clone(), p.second.get().first)).collect(Collectors.toList());
         this.activity = activity;
+        this.container = container;
+        this.groupID = groupID;
     }
 
     @Override
     public int getCount() {
-        return itemList.size();
+        return container.peekTaskGroups().size();
     }
 
     @Override
     public Object getItem(int position) {
-        return itemList.get(position);
+        return container.peekTaskGroups().get(position);
     }
 
     @Override
@@ -47,15 +48,14 @@ public class TaskGroupAdapter extends BaseAdapter {
         return position;
     }
 
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
+        TaskContainerAdapter.ViewHolder viewHolder;
 
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.task_group_item, parent, false);
 
-            viewHolder = new ViewHolder();
+            viewHolder = new TaskContainerAdapter.ViewHolder();
             viewHolder.logo = convertView.findViewById(R.id.task_logo);
             viewHolder.group_describe = convertView.findViewById(R.id.task_group_describe);
             viewHolder.task_desc = convertView.findViewById(R.id.task_desc);
@@ -63,26 +63,31 @@ public class TaskGroupAdapter extends BaseAdapter {
 
             convertView.setTag(viewHolder);
         } else {
-            viewHolder = (ViewHolder) convertView.getTag();
+            viewHolder = (TaskContainerAdapter.ViewHolder) convertView.getTag();
         }
 
-        TaskGroupDataEntry item = itemList.get(position);
+//        taskgroupdataentryentry item = itemlist.get(position);
+        AbstractTaskContainer item = (AbstractTaskContainer) getItem(position);
+        Optional<Task> peeked = item.peek_task();
 
-        viewHolder.logo.setImageResource(item.getImageResId());
-        viewHolder.group_describe.setText(item.getDescribe());
-        viewHolder.task_desc.setText(item.getTaskDesc());
+
+        viewHolder.logo.setImageResource(R.drawable.todos);
+        viewHolder.group_describe.setText(item.getContainerID());
+        viewHolder.task_desc.setText(peeked.isPresent()?peeked.get().getDescription():"null");
 
         viewHolder.complete_current_task.setOnClickListener(view -> {
-            MemoryDataBase.INSTANCE.query(item.getGroupID(), item.getTaskContainerID()).ifPresent(AbstractTaskContainer::markAsDone);
+            item.markAsDone();
         });
 
 
         convertView.findViewById(R.id.actually_button_to_lower).setOnClickListener(view -> {
-            ((MainActivity) activity).build_intent.accept(Pair.create(intent -> {
-                        intent.putExtra("group", item.getGroupID());
-                        intent.putExtra("id",item.getTaskContainerID());
-                    },
-                    ActivityTaskContainer.class));
+            if (!item.peekTaskGroups().isEmpty()){
+                ((MainActivity) activity).build_intent.accept(Pair.create(intent -> {
+                    intent.putExtra("id", item.getContainerID());
+                    intent.putExtra("group",groupID);
+            },
+            ActivityTaskContainer.class));
+            }
         });
         return convertView;
     }
@@ -96,4 +101,3 @@ public class TaskGroupAdapter extends BaseAdapter {
         Button complete_current_task;
     }
 }
-

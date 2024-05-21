@@ -1,9 +1,10 @@
 package com.mfrf.dawdletodo.model.task_container;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 import java.util.PriorityQueue;
 
 public class PriorityBasedTaskContainer extends AbstractTaskContainer {
@@ -21,8 +22,8 @@ public class PriorityBasedTaskContainer extends AbstractTaskContainer {
 
     @Nullable
     @Override
-    protected Collection<AbstractTaskContainer> peekTaskGroups() {
-        return this.prio_que;
+    public @NonNull List<AbstractTaskContainer> peekTaskGroups() {
+        return this.prio_que.stream().toList();
     }
 
     @Override

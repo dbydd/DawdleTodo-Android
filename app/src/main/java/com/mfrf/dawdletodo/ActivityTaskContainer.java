@@ -4,46 +4,28 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class ActivityTaskContainer extends AppCompatActivity {
-    private EditText editText1;
-    private EditText editText2;
-    private Button addButton;
+import com.mfrf.dawdletodo.data_center.MemoryDataBase;
+import com.mfrf.dawdletodo.model.task_container.AbstractTaskContainer;
+import com.mfrf.dawdletodo.ui.TaskContainerAdapter;
 
+import java.util.Optional;
+
+public class ActivityTaskContainer extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_container);
         Intent intent = getIntent();
         String id = intent.getStringExtra("id");
-
-//        MemoryDataBase.INSTANCE(id, (except_id, maybe_null_Abstract_taskContainer) -> {
-//
-//
-//            // 初始化视图组件
-//            editText1 = findViewById(R.id.editText1);
-//            editText2 = findViewById(R.id.editText2);
-//            addButton = findViewById(R.id.addButton);
-//
-//            addButton.setOnClickListener(v -> {
-//                        // 创建 ItemData 并保存到 MemoryDataBase
-//                        String text1 = editText1.getText().toString();
-//                        String text2 = editText2.getText().toString();
-//
-//                        ItemDataEntry itemData = new ItemDataEntry(R.drawable.todos, text1, text2);
-////                        MemoryDataBase.INSTANCE.add_task_group(new AbstractTaskContainer(itemData.getId(), LocalDate.now(), LocalDate.now()));
-//
-//                        // 清空输入框
-//                        editText1.setText("");
-//                        editText2.setText("");
-//                        finish();
-//                    }
-//            );
-//
-//            return maybe_null_Abstract_taskContainer;
-//        }
-//        );
+        String group_id = intent.getStringExtra("group");
+        ListView containers = (ListView) findViewById(R.id.task_container_groups);
+        Optional<AbstractTaskContainer> query = MemoryDataBase.INSTANCE.query(group_id, id);
+        query.ifPresent(c->{
+            containers.setAdapter(new TaskContainerAdapter(this.getBaseContext(),this,c,group_id));
+        });
     }
 }

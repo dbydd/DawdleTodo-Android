@@ -17,17 +17,11 @@
         android:text="Add" />
     </LinearLayout>
 
-    <EditText
-        android:id="@+id/editText1"
+
+    <ListView
+        android:id="@+id/task_container_groups"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Text 1" />
-
-    <EditText
-        android:id="@+id/editText2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Text 2" />
-
+        />
 
 </LinearLayout>

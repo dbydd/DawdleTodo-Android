@@ -1,10 +1,11 @@
 package com.mfrf.dawdletodo.model.task_container;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 public class DailyTaskContainer extends AbstractTaskContainer {
@@ -23,8 +24,8 @@ public class DailyTaskContainer extends AbstractTaskContainer {
 
     @Nullable
     @Override
-    protected Collection<AbstractTaskContainer> peekTaskGroups() {
-        return round_robin_queue;
+    public @NonNull List<AbstractTaskContainer> peekTaskGroups() {
+        return round_robin_queue.stream().toList();
     }
 
     @Override

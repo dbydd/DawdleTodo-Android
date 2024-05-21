@@ -10,6 +10,7 @@ import com.mfrf.dawdletodo.model.Task;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -43,7 +44,7 @@ public abstract class AbstractTaskContainer implements Comparable<AbstractTaskCo
     }
 
     @NonNull
-    protected abstract Collection<AbstractTaskContainer> peekTaskGroups();
+    public abstract List<AbstractTaskContainer> peekTaskGroups();
 
     public Optional<Task> peek_task() {
         Optional<AbstractTaskContainer> max = this.peekTaskGroups().stream().filter(Objects::nonNull).max(Comparator.naturalOrder());
