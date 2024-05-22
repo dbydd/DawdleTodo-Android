@@ -17,7 +17,7 @@
         >
     </Spinner>
 
-    <fragment
+    <FrameLayout
         android:id="@+id/frag_task_configuration"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -25,7 +25,7 @@
         app:layout_constraintTop_toBottomOf="@id/select_task_type_to_add"
         app:layout_constraintVertical_weight="7">
 
-    </fragment>
+    </FrameLayout>
 
 
 

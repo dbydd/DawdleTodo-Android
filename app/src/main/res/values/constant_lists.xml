@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="task_types">
+        <item>基于优先级</item>
+        <item>原子任务</item>
+        <item>日常循环</item>
+    </string-array>
+    <string-array name="complete_time">
+        <item>无限循环</item>
+        <item>有限次数</item>
+    </string-array>
+</resources>

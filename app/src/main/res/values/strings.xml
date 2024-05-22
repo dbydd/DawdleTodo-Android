@@ -14,4 +14,7 @@
     <string name="placeholder">占位符/这玩意不应该出现</string>
     <string name="add_task">确认</string>
     <string name="cancel">取消</string>
+    <string name="task_id">任务名称: </string>
+    <string name="default_complete_time">0</string>
+    <string name="complete_time">完成次数</string>
 </resources>
