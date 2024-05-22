@@ -27,5 +27,6 @@ public class ActivityTaskContainer extends AppCompatActivity {
         query.ifPresent(c->{
             containers.setAdapter(new TaskContainerAdapter(this.getBaseContext(),this,c,group_id));
         });
+
     }
 }
