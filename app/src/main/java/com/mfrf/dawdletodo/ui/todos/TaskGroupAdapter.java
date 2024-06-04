@@ -17,6 +17,7 @@ import com.mfrf.dawdletodo.MainActivity;
 import com.mfrf.dawdletodo.R;
 import com.mfrf.dawdletodo.data_center.MemoryDataBase;
 import com.mfrf.dawdletodo.model.task_container.AbstractTaskContainer;
+import com.mfrf.dawdletodo.utils.BasicActivityForConvince;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -78,10 +79,10 @@ public class TaskGroupAdapter extends BaseAdapter {
 
 
         convertView.findViewById(R.id.actually_button_to_lower).setOnClickListener(view -> {
-            ((MainActivity) activity).build_intent.accept(Pair.create(intent -> {
-                        intent.putExtra("group", item.getGroupID());
-                        intent.putExtra("id",item.getTaskContainerID());
-                    },
+            ((MainActivity) activity).build_intent.accept(new BasicActivityForConvince.Intent_ActivityPairProcessor(intent -> {
+                intent.putExtra("group", item.getGroupID());
+                intent.putExtra("id", item.getTaskContainerID());
+            },
                     ActivityTaskContainer.class));
         });
         return convertView;

@@ -44,8 +44,8 @@
                 android:text="@string/complete_time"
                 android:gravity="left|center"
                 />
-            <Spinner
-                android:id="@+id/select_complete_times"
+            <CheckBox
+                android:id="@+id/is_infinity_times"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"

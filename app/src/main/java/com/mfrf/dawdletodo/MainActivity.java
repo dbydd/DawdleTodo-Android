@@ -16,22 +16,15 @@ import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.mfrf.dawdletodo.databinding.ActivityMainBinding;
+import com.mfrf.dawdletodo.utils.BasicActivityForConvince;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BasicActivityForConvince {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
-    public final Consumer<Pair<Consumer<Intent>, Class<? extends AppCompatActivity>>> build_intent = pair -> {
-        Intent intent = new Intent(MainActivity.this, pair.second);
-
-        pair.first.accept(intent);
-
-        startActivity(intent);
-    };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

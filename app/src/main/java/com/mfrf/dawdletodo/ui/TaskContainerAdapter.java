@@ -1,7 +1,6 @@
 package com.mfrf.dawdletodo.ui;
 
 import android.content.Context;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,14 +8,15 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.FragmentActivity;
 
 import com.mfrf.dawdletodo.ActivityTaskContainer;
-import com.mfrf.dawdletodo.MainActivity;
 import com.mfrf.dawdletodo.R;
 import com.mfrf.dawdletodo.model.Task;
 import com.mfrf.dawdletodo.model.task_container.AbstractTaskContainer;
+import com.mfrf.dawdletodo.utils.BasicActivityForConvince;
 
 import java.util.Optional;
 
@@ -73,7 +73,7 @@ public class TaskContainerAdapter extends BaseAdapter {
 
         viewHolder.logo.setImageResource(R.drawable.todos);
         viewHolder.group_describe.setText(item.getContainerID());
-        viewHolder.task_desc.setText(peeked.isPresent()?peeked.get().getDescription():"null");
+        viewHolder.task_desc.setText(peeked.isPresent() ? peeked.get().getDescription() : "null");
 
         viewHolder.complete_current_task.setOnClickListener(view -> {
             item.markAsDone();
@@ -81,12 +81,14 @@ public class TaskContainerAdapter extends BaseAdapter {
 
 
         convertView.findViewById(R.id.actually_button_to_lower).setOnClickListener(view -> {
-            if (!item.peekTaskGroups().isEmpty()){
-                ((MainActivity) activity).build_intent.accept(Pair.create(intent -> {
+            if (!item.couldHasChild()) {
+                ((BasicActivityForConvince) activity).build_intent.accept(new BasicActivityForConvince.Intent_ActivityPairProcessor(intent -> {
                     intent.putExtra("id", item.getContainerID());
-                    intent.putExtra("group",groupID);
-            },
-            ActivityTaskContainer.class));
+                    intent.putExtra("group", groupID);
+                },
+                        ActivityTaskContainer.class));
+            } else {
+                Toast.makeText(TaskContainerAdapter.this.context, "cannot add a task that couldn't have child!", Toast.LENGTH_LONG);
             }
         });
         return convertView;

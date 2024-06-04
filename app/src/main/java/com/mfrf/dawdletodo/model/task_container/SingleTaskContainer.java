@@ -51,4 +51,9 @@ public class SingleTaskContainer extends AbstractTaskContainer {
     public String getTypeID() {
         return "Single Task";
     }
+
+    @Override
+    public boolean couldHasChild() {
+        return false;
+    }
 }

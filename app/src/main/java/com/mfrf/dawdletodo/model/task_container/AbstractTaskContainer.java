@@ -8,7 +8,6 @@ import com.mfrf.dawdletodo.model.PriorityModifiers;
 import com.mfrf.dawdletodo.model.Task;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -80,5 +79,9 @@ public abstract class AbstractTaskContainer implements Comparable<AbstractTaskCo
         );
         this.peekTaskGroups().stream().forEach(c -> c.countItems(in));
         return in;
+    }
+
+    public boolean couldHasChild(){
+        return true;
     }
 }
