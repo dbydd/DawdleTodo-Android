@@ -3,7 +3,7 @@ package com.mfrf.dawdletodo.model;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Task implements Serializable,Cloneable {
+public class Task implements Serializable, Cloneable {
     private final String id;
     private final String description;
     private final int initial_priority;
@@ -22,7 +22,7 @@ public class Task implements Serializable,Cloneable {
         begin_date = beginDate;
         end_date = endDate;
         expected_complete_times = expectedCompleteTime;
-        infini_long = expectedCompleteTime == Integer.MAX_VALUE;
+        infini_long = expectedCompleteTime <= 0;
     }
 
 

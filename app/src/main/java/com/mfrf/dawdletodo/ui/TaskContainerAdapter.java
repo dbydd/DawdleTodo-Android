@@ -81,14 +81,14 @@ public class TaskContainerAdapter extends BaseAdapter {
 
 
         convertView.findViewById(R.id.actually_button_to_lower).setOnClickListener(view -> {
-            if (!item.couldHasChild()) {
+            if (item.couldHasChild()) {
                 ((BasicActivityForConvince) activity).build_intent.accept(new BasicActivityForConvince.Intent_ActivityPairProcessor(intent -> {
                     intent.putExtra("id", item.getContainerID());
                     intent.putExtra("group", groupID);
                 },
                         ActivityTaskContainer.class));
             } else {
-                Toast.makeText(TaskContainerAdapter.this.context, "cannot add a task that couldn't have child!", Toast.LENGTH_LONG);
+                Toast.makeText(TaskContainerAdapter.this.context, "cannot add a task that couldn't have child!", Toast.LENGTH_LONG).show();
             }
         });
         return convertView;

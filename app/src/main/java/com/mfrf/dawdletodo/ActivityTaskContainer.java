@@ -29,7 +29,7 @@ public class ActivityTaskContainer extends BasicActivityForConvince {
         Button addTask = (Button) findViewById(R.id.button_add_task);
         addTask.setOnClickListener(v -> {
             this.build_intent.accept(new Intent_ActivityPairProcessor(intent -> {
-                intent.putExtras(fromIntent.getExtras());
+                intent.putExtras(fromIntent.getExtras().deepCopy());
             }, AddTaskActivity.class));
         });
 

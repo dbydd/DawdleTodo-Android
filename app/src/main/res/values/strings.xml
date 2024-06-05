@@ -17,4 +17,9 @@
     <string name="task_id">任务名称: </string>
     <string name="default_complete_time">0</string>
     <string name="complete_time">完成次数</string>
+    <string name="task_description">任务描述</string>
+    <string name="priority">初始优先级</string>
+    <string name="edit_complete_time"><![CDATA[完成次数，若<=0则为无限次]]></string>
+    <string name="begin_date">开始日期/默认今天</string>
+    <string name="end_date">结束日期/默认30天后</string>
 </resources>

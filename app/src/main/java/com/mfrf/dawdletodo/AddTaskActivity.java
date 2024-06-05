@@ -2,35 +2,23 @@ package com.mfrf.dawdletodo;
 
 import static com.mfrf.dawdletodo.R.layout.create_task_spinner_item;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.EditText;
+import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.mfrf.dawdletodo.data_center.MemoryDataBase;
 import com.mfrf.dawdletodo.enums.EnumTaskType;
 import com.mfrf.dawdletodo.ui.AddTaskSpinAdapter;
+import com.mfrf.dawdletodo.ui.addtask.AddtaskBaseFragment;
 import com.mfrf.dawdletodo.utils.BasicActivityForConvince;
-
-import java.util.Locale;
 
 public class AddTaskActivity extends BasicActivityForConvince {
 
-    private String group_id;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
@@ -42,17 +30,31 @@ public class AddTaskActivity extends BasicActivityForConvince {
         FragmentManager manager = this.getSupportFragmentManager();
         FragmentTransaction init_transaction = manager.beginTransaction();
 
-        this.group_id = parameters.getString("group");
-        this.group_id = parameters.getString("group");
+        String group_id = parameters.getString("group");
+        String parent_id = parameters.getString("id");
 
-        init_transaction.add(R.id.frag_task_creator_container, EnumTaskType.Single.createFragment());
+        init_transaction.add(R.id.frag_task_container_creator, EnumTaskType.Single.createFragment());
+        init_transaction.commit();
         selector.setOnItemClickListener((parent, view, position, id) -> {
             FragmentTransaction fragmentTransaction = AddTaskActivity.this.getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.frag_task_creator_container, ((EnumTaskType) selector.getItemAtPosition(position)).createFragment());
+            fragmentTransaction.replace(R.id.frag_task_container_creator, ((EnumTaskType) selector.getItemAtPosition(position)).createFragment());
             fragmentTransaction.commit();
         });
 
-//        MemoryDataBase.INSTANCE.add_task_container() //TODO add a container
+
+        Button create_button = (Button) findViewById(R.id.complete_edit_and_add_task);
+        create_button.setOnClickListener(v -> {
+            ((AddtaskBaseFragment) manager.findFragmentById(R.id.frag_task_container_creator)).getTask().ifPresent(container -> {
+                MemoryDataBase.INSTANCE.add_task_container(container, parent_id, group_id);
+                AddTaskActivity.this.finish();
+            });
+        });
+
+        Button cancel = (Button) findViewById(R.id.cancel_button);
+        cancel.setOnClickListener(v -> {
+            AddTaskActivity.this.finish();
+        });
+
     }
 
 

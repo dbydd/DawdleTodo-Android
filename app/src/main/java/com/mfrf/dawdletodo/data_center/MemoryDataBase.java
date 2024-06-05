@@ -62,11 +62,11 @@ public enum MemoryDataBase {
         return this.TASK_GROUPS.remove(id);
     }
 
-    public boolean add_task_container(AbstractTaskContainer g, String parent_node, String tree_id) {
-        this.TASK_GROUPS.compute(tree_id, (s, taskTreeManager) -> {
+    public boolean add_task_container(AbstractTaskContainer g, String parent_node, String group_id) {
+        this.TASK_GROUPS.compute(group_id, (s, taskTreeManager) -> {
             //todo solve errors
             try {
-                return (taskTreeManager == null ? new TaskTreeManager(tree_id) : taskTreeManager).addTo(parent_node, g);
+                return (taskTreeManager == null ? new TaskTreeManager(group_id) : taskTreeManager).addTo(parent_node, g);
             } catch (AddTaskError.CannotAddToSingleTaskContainerError e) {
                 throw new RuntimeException(e);
             } catch (AddTaskError e) {

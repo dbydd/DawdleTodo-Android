@@ -18,15 +18,14 @@
     </Spinner>
 
     <FrameLayout
-        android:id="@+id/frag_task_creator_container"
+        android:id="@+id/frag_task_container_creator"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/button_group"
         app:layout_constraintTop_toBottomOf="@id/select_task_type_to_add"
+        app:layout_constraintBottom_toTopOf="@id/button_group"
         app:layout_constraintVertical_weight="7">
 
     </FrameLayout>
-
 
 
     <LinearLayout
