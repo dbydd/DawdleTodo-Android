@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public class SingleTaskContainer extends AbstractTaskContainer {
+public class AtomicTaskContainer extends AbstractTaskContainer {
 
     private final Task task;
 
-    public SingleTaskContainer(Task task) {
+    public AtomicTaskContainer(Task task) {
         super(task.getId());
         this.task = task;
     }
@@ -49,7 +49,7 @@ public class SingleTaskContainer extends AbstractTaskContainer {
 
     @Override
     public String getTypeID() {
-        return "Single Task";
+        return "Atomic Task";
     }
 
     @Override

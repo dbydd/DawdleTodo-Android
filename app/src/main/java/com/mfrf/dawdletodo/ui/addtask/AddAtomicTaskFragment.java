@@ -15,13 +15,13 @@ import androidx.annotation.Nullable;
 import com.mfrf.dawdletodo.R;
 import com.mfrf.dawdletodo.model.Task;
 import com.mfrf.dawdletodo.model.task_container.AbstractTaskContainer;
-import com.mfrf.dawdletodo.model.task_container.SingleTaskContainer;
+import com.mfrf.dawdletodo.model.task_container.AtomicTaskContainer;
 
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class AddSingleTaskFragment extends AddtaskBaseFragment {
+public class AddAtomicTaskFragment extends AddtaskBaseFragment {
 
     private CheckBox completeTimesSelector;
     private EditText completeTime_edit;
@@ -29,7 +29,7 @@ public class AddSingleTaskFragment extends AddtaskBaseFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View self = inflater.inflate(R.layout.fragment_addtask_single, container);
+        View self = inflater.inflate(R.layout.fragment_addtask_single, container,false);
         return self;
     }
 
@@ -48,7 +48,7 @@ public class AddSingleTaskFragment extends AddtaskBaseFragment {
             extractText((EditText) self.findViewById(R.id.priority), true).ifPresent(priority -> {
 
                 Task task_created = new Task(task_id, description, Integer.parseInt(priority.isBlank() || priority.isEmpty() ? "0" : priority), begin_date, end_date, complete_times);
-                Optional<SingleTaskContainer> singleTaskContainer = Optional.of(new SingleTaskContainer(task_created));
+                Optional<AtomicTaskContainer> singleTaskContainer = Optional.of(new AtomicTaskContainer(task_created));
                 ret.set(singleTaskContainer);
             });
         });

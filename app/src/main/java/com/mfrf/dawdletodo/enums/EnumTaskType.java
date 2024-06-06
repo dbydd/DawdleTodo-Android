@@ -2,10 +2,10 @@ package com.mfrf.dawdletodo.enums;
 
 import androidx.fragment.app.Fragment;
 
-import com.mfrf.dawdletodo.ui.addtask.AddSingleTaskFragment;
+import com.mfrf.dawdletodo.ui.addtask.AddAtomicTaskFragment;
 
 public enum EnumTaskType {
-    Daily("daily"), Priority("priority_based"), Single("single_time");
+    Daily("daily_task"), Priority("priority_based_task"), Atomic("atomic_task");
 
     private final String translationKey;
 
@@ -15,14 +15,14 @@ public enum EnumTaskType {
 
     @Override
     public String toString() {
-        return "@string/" + this.translationKey;
+        return this.translationKey;
     }
 
     public Fragment createFragment() {
         return switch (this) {
             case Daily -> null;
             case Priority -> null;
-            case Single -> new AddSingleTaskFragment();
+            case Atomic -> new AddAtomicTaskFragment();
 
         };
     }

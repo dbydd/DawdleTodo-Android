@@ -22,4 +22,8 @@
     <string name="edit_complete_time"><![CDATA[完成次数，若<=0则为无限次]]></string>
     <string name="begin_date">开始日期/默认今天</string>
     <string name="end_date">结束日期/默认30天后</string>
+
+    <string name="daily_task">日常任务</string>
+    <string name="priority_based_task">优先级队列</string>
+    <string name="atomic_task">最小任务</string>
 </resources>

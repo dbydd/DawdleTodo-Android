@@ -18,6 +18,7 @@ public abstract class BasicActivityForConvince extends AppCompatActivity {
     public record Intent_ActivityPairProcessor(Consumer<Intent> processor,
                                                   Class<? extends AppCompatActivity> aClass){
 
+
     }
 
 }

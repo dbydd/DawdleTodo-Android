@@ -53,7 +53,7 @@ public class TaskTreeManager {
 //        return this.root.countItems(new HashMap<>()).entrySet().stream().map(entry->entry.getKey() + ": " + entry.getValue().toString()).reduce((acc,current)->
 //            acc + "\n" + current
 //        ).get();
-        return this.root.countItems(new HashMap<>()).get("Single Task").toString();
+        return this.root.countItems(new HashMap<>()).get("Atomic Task").toString();
     }
 
     public Optional<Pair<String,Task>> advice() {

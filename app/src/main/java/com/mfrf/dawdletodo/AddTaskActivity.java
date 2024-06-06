@@ -3,11 +3,13 @@ package com.mfrf.dawdletodo;
 import static com.mfrf.dawdletodo.R.layout.create_task_spinner_item;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
 
-import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -20,9 +22,10 @@ import com.mfrf.dawdletodo.utils.BasicActivityForConvince;
 public class AddTaskActivity extends BasicActivityForConvince {
 
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
+        @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_add_task);
 
         Bundle parameters = getIntent().getExtras();
         Spinner selector = (Spinner) findViewById(R.id.select_task_type_to_add);
@@ -33,12 +36,20 @@ public class AddTaskActivity extends BasicActivityForConvince {
         String group_id = parameters.getString("group");
         String parent_id = parameters.getString("id");
 
-        init_transaction.add(R.id.frag_task_container_creator, EnumTaskType.Single.createFragment());
+        init_transaction.add(R.id.frag_task_container_creator, EnumTaskType.Atomic.createFragment());
         init_transaction.commit();
-        selector.setOnItemClickListener((parent, view, position, id) -> {
-            FragmentTransaction fragmentTransaction = AddTaskActivity.this.getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.frag_task_container_creator, ((EnumTaskType) selector.getItemAtPosition(position)).createFragment());
-            fragmentTransaction.commit();
+        selector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                    FragmentTransaction fragmentTransaction = AddTaskActivity.this.getSupportFragmentManager().beginTransaction();
+//                    fragmentTransaction.replace(R.id.frag_task_container_creator, ((EnumTaskType) selector.getItemAtPosition(position)).createFragment());
+//                    fragmentTransaction.commit();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                return;
+            }
         });
 
 
@@ -56,6 +67,7 @@ public class AddTaskActivity extends BasicActivityForConvince {
         });
 
     }
+
 
 
 }
