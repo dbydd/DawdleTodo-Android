@@ -19,28 +19,25 @@ import com.mfrf.dawdletodo.data_center.MemoryDataBase;
 import com.mfrf.dawdletodo.model.task_container.AbstractTaskContainer;
 import com.mfrf.dawdletodo.utils.BasicActivityForConvince;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class TaskGroupAdapter extends BaseAdapter {
-    private final List<TaskGroupDataEntry> itemList;
     private Context context;
     private final FragmentActivity activity;
 
     public TaskGroupAdapter(Context context, FragmentActivity activity) {
         this.context = context;
-        this.itemList = MemoryDataBase.INSTANCE.TASK_GROUPS.entrySet().stream().map(kv -> Pair.create(kv, kv.getValue().advice())).filter(p -> p.second.isPresent()).map(p -> new TaskGroupDataEntry(R.drawable.todos, p.first.getKey(), "tasks: " + p.first.getValue().countItems(), p.second.get().second.clone(), p.second.get().first)).collect(Collectors.toList());
         this.activity = activity;
     }
 
     @Override
     public int getCount() {
-        return itemList.size();
+        return MemoryDataBase.INSTANCE.TASK_GROUPS.entrySet().stream().map(kv -> Pair.create(kv, kv.getValue().advice())).filter(p -> p.second.isPresent()).map(p -> new TaskGroupDataEntry(R.drawable.todos, p.first.getKey(), "tasks: " + p.first.getValue().countItems(), p.second.get().second.clone(), p.second.get().first)).collect(Collectors.toList()).size();
     }
 
     @Override
     public Object getItem(int position) {
-        return itemList.get(position);
+        return MemoryDataBase.INSTANCE.TASK_GROUPS.entrySet().stream().map(kv -> Pair.create(kv, kv.getValue().advice())).filter(p -> p.second.isPresent()).map(p -> new TaskGroupDataEntry(R.drawable.todos, p.first.getKey(), "tasks: " + p.first.getValue().countItems(), p.second.get().second.clone(), p.second.get().first)).collect(Collectors.toList()).get(position);
     }
 
     @Override
@@ -67,7 +64,7 @@ public class TaskGroupAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        TaskGroupDataEntry item = itemList.get(position);
+        TaskGroupDataEntry item = MemoryDataBase.INSTANCE.TASK_GROUPS.entrySet().stream().map(kv -> Pair.create(kv, kv.getValue().advice())).filter(p -> p.second.isPresent()).map(p -> new TaskGroupDataEntry(R.drawable.todos, p.first.getKey(), "tasks: " + p.first.getValue().countItems(), p.second.get().second.clone(), p.second.get().first)).collect(Collectors.toList()).get(position);
 
         viewHolder.logo.setImageResource(item.getImageResId());
         viewHolder.group_describe.setText(item.getDescribe());
