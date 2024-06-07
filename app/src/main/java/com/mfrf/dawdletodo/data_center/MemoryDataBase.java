@@ -48,6 +48,7 @@ public enum MemoryDataBase {
             throw new RuntimeException(e);
         }
         this.TASK_GROUPS.put("test", test);
+
     }
 
     public void compute(String key, BiFunction<? super String, ? super TaskTreeManager, ? extends TaskTreeManager> create_closure) {

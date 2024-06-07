@@ -27,4 +27,5 @@
     <string name="priority_based_task">优先级队列</string>
     <string name="atomic_task">最小任务</string>
     <string name="group_id">任务组名称</string>
+    <string name="setting_save_interval">自动保存间隔(秒): </string>
 </resources>
