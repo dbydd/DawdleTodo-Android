@@ -10,7 +10,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.mfrf.dawdletodo.R;
 import com.mfrf.dawdletodo.enums.EnumTaskType;
 
 public class AddTaskSpinAdapter extends ArrayAdapter<EnumTaskType> {
@@ -26,8 +25,11 @@ public class AddTaskSpinAdapter extends ArrayAdapter<EnumTaskType> {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         EnumTaskType item = getItem(position);
-        View view = LayoutInflater.from(getContext()).inflate(resid, parent, false);
-        ((TextView) view.findViewById(R.id.holder)).setText(parent.getResources().getIdentifier(item.toString(), "string", view.getContext().getPackageName()));
-        return view;
+//        View view = LayoutInflater.from(getContext()).inflate(resid, parent, false);
+//        ((TextView) view.findViewById(R.id.holder)).setText(parent.getResources().getIdentifier(item.toString(), "string", view.getContext().getPackageName()));
+
+        TextView v = (TextView) LayoutInflater.from(getContext()).inflate(resid, parent, false);
+        v.setText(parent.getResources().getIdentifier(item.toString(), "string", v.getContext().getPackageName()));
+        return v;
     }
 }

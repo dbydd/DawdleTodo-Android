@@ -41,9 +41,9 @@ public class AddTaskActivity extends BasicActivityForConvince {
         selector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                    FragmentTransaction fragmentTransaction = AddTaskActivity.this.getSupportFragmentManager().beginTransaction();
-//                    fragmentTransaction.replace(R.id.frag_task_container_creator, ((EnumTaskType) selector.getItemAtPosition(position)).createFragment());
-//                    fragmentTransaction.commit();
+                    FragmentTransaction fragmentTransaction = AddTaskActivity.this.getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.frag_task_container_creator, ((EnumTaskType) selector.getItemAtPosition(position)).createFragment());
+                    fragmentTransaction.commit();
             }
 
             @Override

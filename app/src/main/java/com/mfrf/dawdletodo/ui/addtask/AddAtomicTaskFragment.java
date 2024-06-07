@@ -23,13 +23,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class AddAtomicTaskFragment extends AddtaskBaseFragment {
 
-    private CheckBox completeTimesSelector;
-    private EditText completeTime_edit;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View self = inflater.inflate(R.layout.fragment_addtask_single, container,false);
+        View self = inflater.inflate(R.layout.fragment_addtask_atomic, container,false);
         return self;
     }
 
@@ -55,16 +53,4 @@ public class AddAtomicTaskFragment extends AddtaskBaseFragment {
         return ret.get();
     }
 
-    private Optional<String> extractText(EditText in, boolean ShouldNonnull) {
-        Editable text = in.getText();
-        if (text.toString().isBlank()) {
-            if (ShouldNonnull) {
-                Toast.makeText(this.getContext(), in.getHint() + "cannot be empty", Toast.LENGTH_LONG).show();
-                return Optional.empty();
-            } else {
-                Optional.of("");
-            }
-        }
-        return Optional.of(text.toString());
-    }
 }

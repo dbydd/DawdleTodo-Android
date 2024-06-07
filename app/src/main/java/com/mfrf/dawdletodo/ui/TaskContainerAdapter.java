@@ -77,6 +77,7 @@ public class TaskContainerAdapter extends BaseAdapter {
 
         viewHolder.complete_current_task.setOnClickListener(view -> {
             item.markAsDone();
+            TaskContainerAdapter.this.notifyDataSetChanged();
         });
 
 
@@ -88,7 +89,7 @@ public class TaskContainerAdapter extends BaseAdapter {
                 },
                         ActivityTaskContainer.class));
             } else {
-                Toast.makeText(TaskContainerAdapter.this.context, "cannot add a task that couldn't have child!", Toast.LENGTH_LONG).show();
+                Toast.makeText(TaskContainerAdapter.this.context, "cannot add a task that couldn't have child!", Toast.LENGTH_SHORT).show();
             }
         });
         return convertView;
