@@ -14,9 +14,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-public abstract class AbstractTaskContainer implements Comparable<AbstractTaskContainer> {
-    private final String group_id;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
+public abstract class AbstractTaskContainer extends RealmObject implements Comparable<AbstractTaskContainer> {
+    @PrimaryKey
+    private final String group_id;
 
     public AbstractTaskContainer(String groupId) {
         group_id = groupId;

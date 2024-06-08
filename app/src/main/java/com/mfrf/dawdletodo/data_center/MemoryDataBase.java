@@ -1,21 +1,44 @@
 package com.mfrf.dawdletodo.data_center;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.mfrf.dawdletodo.exceptions.AddTaskError;
 import com.mfrf.dawdletodo.model.Task;
 import com.mfrf.dawdletodo.model.TaskTreeManager;
 import com.mfrf.dawdletodo.model.task_container.AbstractTaskContainer;
+import com.mfrf.dawdletodo.model.task_container.AtomicTaskContainer;
 import com.mfrf.dawdletodo.model.task_container.DailyTaskContainer;
 import com.mfrf.dawdletodo.model.task_container.PriorityBasedTaskContainer;
-import com.mfrf.dawdletodo.model.task_container.AtomicTaskContainer;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
 
 public enum MemoryDataBase {
     INSTANCE();
-    public final HashMap<String, TaskTreeManager> TASK_GROUPS = new HashMap<>();
+
+
+    public HashMap<String, AtomicBoolean> DIRTY_MARKS = new HashMap<>();
+    public HashMap<String, TaskTreeManager> TASK_GROUPS = new HashMap<>() {
+        @Nullable
+        @Override
+        public TaskTreeManager put(String key, TaskTreeManager value) {
+            TaskTreeManager put = super.put(key, value);
+            DIRTY_MARKS.compute(key, (k, v) -> v == null ? new AtomicBoolean(true) : v);
+            return put;
+        }
+
+        @Nullable
+        @Override
+        public TaskTreeManager compute(String key, @NonNull BiFunction<? super String, ? super TaskTreeManager, ? extends TaskTreeManager> remappingFunction) {
+            TaskTreeManager compute = super.compute(key, remappingFunction);
+            DIRTY_MARKS.compute(key, (k, v) -> v == null ? new AtomicBoolean(true) : v);
+            return compute;
+        }
+    };
 
     {
         TaskTreeManager test = new TaskTreeManager("test");
@@ -51,12 +74,10 @@ public enum MemoryDataBase {
 
     }
 
-    public void compute(String key, BiFunction<? super String, ? super TaskTreeManager, ? extends TaskTreeManager> create_closure) {
-        TaskTreeManager abstractTaskContainer = this.TASK_GROUPS.compute(key, create_closure);
-    }
-
     public TaskTreeManager remove_task_group(String id) {
-        return this.TASK_GROUPS.remove(id);
+        TaskTreeManager remove = this.TASK_GROUPS.remove(id);
+        DIRTY_MARKS.remove(id);
+        return remove;
     }
 
     public boolean add_task_container(AbstractTaskContainer g, String parent_node, String group_id) {
@@ -73,8 +94,13 @@ public enum MemoryDataBase {
         return false;
     }
 
-    public Optional<AbstractTaskContainer> query(String taskGroup,String taskContainer){
+    public void markDirty(String id) {
+        DIRTY_MARKS.put(id, new AtomicBoolean(true));
+    }
+
+    public Optional<AbstractTaskContainer> query(String taskGroup, String taskContainer) {
         return this.TASK_GROUPS.containsKey(taskGroup) ? Optional.of(TASK_GROUPS.get(taskGroup).find(taskContainer)) : Optional.empty();
     }
+
 
 }

@@ -44,7 +44,8 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.17.1")
+    implementation("com.google.code.gson:gson:2.8.9")
+    implementation("io.realm:realm-android-library:10.12.0")
 ////    implementation("org.xerial:sqlite-jdbc:3.45.3.0")
 //    implementation("org.iq80.leveldb:leveldb:0.12")
 

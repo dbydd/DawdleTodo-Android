@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import io.realm.RealmObject;
+
 public class DailyTaskContainer extends AbstractTaskContainer {
     private Queue<AbstractTaskContainer> round_robin_queue = new LinkedList<>();
 

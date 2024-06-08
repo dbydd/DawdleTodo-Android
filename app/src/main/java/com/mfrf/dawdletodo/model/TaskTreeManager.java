@@ -1,22 +1,33 @@
 package com.mfrf.dawdletodo.model;
 
-import android.graphics.Path;
 import android.util.Pair;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.mfrf.dawdletodo.data_center.MemoryDataBase;
+import com.mfrf.dawdletodo.data_center.RuntimeTypeAdapterFactory;
 import com.mfrf.dawdletodo.exceptions.AddTaskError;
 import com.mfrf.dawdletodo.model.task_container.AbstractTaskContainer;
+import com.mfrf.dawdletodo.model.task_container.AtomicTaskContainer;
 import com.mfrf.dawdletodo.model.task_container.DailyTaskContainer;
+import com.mfrf.dawdletodo.model.task_container.PriorityBasedTaskContainer;
 
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class TaskTreeManager {
-    private final AbstractTaskContainer root;
+import io.realm.RealmObject;
+
+public class TaskTreeManager extends RealmObject {
+    public static final RuntimeTypeAdapterFactory<AbstractTaskContainer> typeFactory = RuntimeTypeAdapterFactory
+            .of(AbstractTaskContainer.class, "type")
+            .registerSubtype(AtomicTaskContainer.class, "AtomicTaskContainer")
+            .registerSubtype(DailyTaskContainer.class, "DailyTaskContainer")
+            .registerSubtype(PriorityBasedTaskContainer.class, "PriorityBasedTaskContainer");
+    public static final Gson parser = new GsonBuilder().registerTypeAdapterFactory(typeFactory).setPrettyPrinting().create();
+
     private final String configID;
+    private final AbstractTaskContainer root;
 
     public TaskTreeManager(AbstractTaskContainer root, String configID) {
         this.root = root;
@@ -38,15 +49,17 @@ public class TaskTreeManager {
     }
 
 
-    public String toJSON() throws JsonProcessingException {
-        ObjectWriter writer = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        String jsonNode = writer.writeValueAsString(this);
-        return jsonNode;
+    public String toJSON() {
+        return parser.toJson(this);
     }
 
-    public static TaskTreeManager fromJSON(String json) throws JsonProcessingException {
-        ObjectReader reader = new ObjectMapper().reader();
-        return reader.readValue(json);
+    public static TaskTreeManager fromJSON(String json) {
+        return parser.fromJson(json, TaskTreeManager.class);
+    }
+
+
+    public String getConfigID() {
+        return configID;
     }
 
     public String countItems() {
@@ -56,12 +69,20 @@ public class TaskTreeManager {
         return this.root.countItems(new HashMap<>()).get("Atomic Task").toString();
     }
 
-    public Optional<Pair<String,Task>> advice() {
+    public Optional<Pair<String, Task>> advice() {
         Optional<Task> task = this.root.peek_task();
         return task.map(value -> Pair.create(this.root.getContainerID(), value));
     }
 
-    public AbstractTaskContainer find(String task_id){
+    public AbstractTaskContainer find(String task_id) {
         return root.find(task_id);
+    }
+
+    public boolean isDirty() {
+        return MemoryDataBase.INSTANCE.DIRTY_MARKS.getOrDefault(this.configID, new AtomicBoolean(true)).get();
+    }
+
+    public void cleanDirty() {
+        MemoryDataBase.INSTANCE.DIRTY_MARKS.put(this.configID, new AtomicBoolean(false));
     }
 }
