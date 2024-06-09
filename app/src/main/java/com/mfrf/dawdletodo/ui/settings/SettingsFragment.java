@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 
 import com.mfrf.dawdletodo.R;
 import com.mfrf.dawdletodo.data_center.Configuration;
+import com.mfrf.dawdletodo.data_center.DatabaseHandler;
 import com.mfrf.dawdletodo.databinding.FragmentSettingsBinding;
 
 import java.lang.reflect.InvocationTargetException;
@@ -50,11 +51,14 @@ public class SettingsFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                try {
-                    consumer.invoke(Configuration.Instance, mapper.apply(s.toString()));
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException(e);
-                }
+//                    consumer.invoke(Configuration.Instance, mapper.apply(s.toString()));
+                DatabaseHandler.operationConfig("default", c -> {
+                    try {
+                        consumer.invoke(c, mapper.apply(s.toString()));
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        throw new RuntimeException(e);
+                    }
+                }); //fornow only default
             }
         });
     }

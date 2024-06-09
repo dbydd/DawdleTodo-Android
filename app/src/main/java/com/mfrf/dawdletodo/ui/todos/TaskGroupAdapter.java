@@ -16,10 +16,15 @@ import com.mfrf.dawdletodo.ActivityTaskContainer;
 import com.mfrf.dawdletodo.MainActivity;
 import com.mfrf.dawdletodo.R;
 import com.mfrf.dawdletodo.data_center.MemoryDataBase;
+import com.mfrf.dawdletodo.model.Task;
 import com.mfrf.dawdletodo.model.TaskContainer;
+import com.mfrf.dawdletodo.model.TaskTreeManager;
 import com.mfrf.dawdletodo.utils.BasicActivityForConvince;
 
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
+import io.realm.Realm;
 
 public class TaskGroupAdapter extends BaseAdapter {
     private Context context;
@@ -32,12 +37,33 @@ public class TaskGroupAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return MemoryDataBase.INSTANCE.TASK_GROUPS.entrySet().stream().map(kv -> Pair.create(kv, kv.getValue().advice())).filter(p -> p.second.isPresent()).map(p -> new TaskGroupDataEntry(R.drawable.todos, p.first.getKey(), "tasks: " + p.first.getValue().countItems(), p.second.get().second.clone(), p.second.get().first)).collect(Collectors.toList()).size();
+//        return MemoryDataBase.INSTANCE.TASK_GROUPS.entrySet().stream().map(kv -> Pair.create(kv, kv.getValue().advice())).filter(p -> p.second.isPresent()).map(p -> new TaskGroupDataEntry(R.drawable.todos, p.first.getKey(), "tasks: " + p.first.getValue().countItems(), p.second.get().second.clone(), p.second.get().first)).collect(Collectors.toList()).size();
+        AtomicInteger count = new AtomicInteger();
+        try (Realm defaultInstance = Realm.getDefaultInstance()) {
+            defaultInstance.executeTransaction(t ->
+                    {
+                        count.set(t.where(TaskTreeManager.class).findAll().size());
+                    }
+            );
+        }
+
+        return count.get();
     }
 
     @Override
     public Object getItem(int position) {
-        return MemoryDataBase.INSTANCE.TASK_GROUPS.entrySet().stream().map(kv -> Pair.create(kv, kv.getValue().advice())).filter(p -> p.second.isPresent()).map(p -> new TaskGroupDataEntry(R.drawable.todos, p.first.getKey(), "tasks: " + p.first.getValue().countItems(), p.second.get().second.clone(), p.second.get().first)).collect(Collectors.toList()).get(position);
+//        return MemoryDataBase.INSTANCE.TASK_GROUPS.entrySet().stream().map(kv -> Pair.create(kv, kv.getValue().advice())).filter(p -> p.second.isPresent()).map(p -> new TaskGroupDataEntry(R.drawable.todos, p.first.getKey(), "tasks: " + p.first.getValue().countItems(), p.second.get().second.clone(), p.second.get().first)).collect(Collectors.toList()).get(position);
+        AtomicReference<TaskTreeManager> taskTreeManager = new AtomicReference<>();
+        try (Realm defaultInstance = Realm.getDefaultInstance()) {
+            defaultInstance.executeTransaction(t ->
+                    {
+                        taskTreeManager.set(t.where(TaskTreeManager.class).findAll().stream().map(
+                                defaultInstance::copyFromRealm
+                        ).toList().get(position));
+                    }
+            );
+        }
+        return taskTreeManager.get();
     }
 
     @Override
@@ -64,7 +90,10 @@ public class TaskGroupAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        TaskGroupDataEntry item = MemoryDataBase.INSTANCE.TASK_GROUPS.entrySet().stream().map(kv -> Pair.create(kv, kv.getValue().advice())).filter(p -> p.second.isPresent()).map(p -> new TaskGroupDataEntry(R.drawable.todos, p.first.getKey(), "tasks: " + p.first.getValue().countItems(), p.second.get().second.clone(), p.second.get().first)).collect(Collectors.toList()).get(position);
+//        TaskGroupDataEntry item = MemoryDataBase.INSTANCE.TASK_GROUPS.entrySet().stream().map(kv -> Pair.create(kv, kv.getValue().advice())).filter(p -> p.second.isPresent()).map(p -> new TaskGroupDataEntry(R.drawable.todos, p.first.getKey(), "tasks: " + p.first.getValue().countItems(), p.second.get().second.clone(), p.second.get().first)).collect(Collectors.toList()).get(position);
+        TaskTreeManager fetched_clone = (TaskTreeManager) getItem(position);
+        Pair<String, Task> advice = fetched_clone.advice().get();
+        TaskGroupDataEntry item = new TaskGroupDataEntry(R.drawable.todos, fetched_clone.getConfigID(), "tasks: " + fetched_clone.countItems(), advice.second, advice.first);
 
         viewHolder.logo.setImageResource(item.getImageResId());
         viewHolder.group_describe.setText(item.getDescribe());
@@ -84,7 +113,6 @@ public class TaskGroupAdapter extends BaseAdapter {
         });
         return convertView;
     }
-
 
 
     static class ViewHolder {

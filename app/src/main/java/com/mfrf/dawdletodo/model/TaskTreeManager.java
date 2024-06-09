@@ -2,12 +2,10 @@ package com.mfrf.dawdletodo.model;
 
 import android.util.Pair;
 
-import com.mfrf.dawdletodo.data_center.MemoryDataBase;
 import com.mfrf.dawdletodo.exceptions.AddTaskError;
 
 import java.util.HashMap;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -62,11 +60,4 @@ public class TaskTreeManager extends RealmObject {
         return root.find(task_id);
     }
 
-    public boolean isDirty() {
-        return MemoryDataBase.INSTANCE.DIRTY_MARKS.getOrDefault(this.configID, new AtomicBoolean(true)).get();
-    }
-
-    public void cleanDirty() {
-        MemoryDataBase.INSTANCE.DIRTY_MARKS.put(this.configID, new AtomicBoolean(false));
-    }
 }

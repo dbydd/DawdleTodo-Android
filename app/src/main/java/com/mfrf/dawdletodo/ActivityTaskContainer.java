@@ -20,6 +20,7 @@ public class ActivityTaskContainer extends BasicActivityForConvince {
         ListView containers = (ListView) findViewById(R.id.task_container_groups);
         MemoryDataBase.INSTANCE.query(group_id, id, taskContainer -> {
             if (containers != null) {
+                taskContainer = taskContainer.getRealm() == null ? taskContainer : taskContainer.getRealm().copyFromRealm(taskContainer);
                 containers.setAdapter(new TaskContainerAdapter(this.getBaseContext(), this, taskContainer, group_id));
             }
         });
