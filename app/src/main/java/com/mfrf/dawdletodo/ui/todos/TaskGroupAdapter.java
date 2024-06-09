@@ -101,6 +101,7 @@ public class TaskGroupAdapter extends BaseAdapter {
 
         viewHolder.complete_current_task.setOnClickListener(view -> {
             MemoryDataBase.INSTANCE.query(item.getGroupID(), item.getTaskContainerID(), TaskContainer::markAsDone);
+            this.notifyDataSetChanged();
         });
 
 

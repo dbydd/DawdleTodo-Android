@@ -20,28 +20,46 @@ import com.mfrf.dawdletodo.model.TaskContainer;
 import com.mfrf.dawdletodo.utils.BasicActivityForConvince;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class TaskContainerAdapter extends BaseAdapter {
     private final Context context;
     private final FragmentActivity activity;
-    private TaskContainer container;
     private final String groupID;
+    private final String containerID;
 
-    public TaskContainerAdapter(Context context, FragmentActivity activity, TaskContainer container, String groupID) {
+    public TaskContainerAdapter(Context context, FragmentActivity activity, String groupID, String containerID) {
         this.context = context;
         this.activity = activity;
-        this.container = container;
         this.groupID = groupID;
+        this.containerID = containerID;
     }
 
     @Override
     public int getCount() {
-        return container.peekTaskGroups().size();
+        AtomicInteger num = new AtomicInteger();
+        MemoryDataBase.INSTANCE.query(groupID, containerID, taskContainer -> {
+            if (taskContainer != null) {
+                num.set(taskContainer.peekTaskGroups().size());
+            }
+        });
+        return num.get();
     }
 
     @Override
     public Object getItem(int position) {
-        return container.peekTaskGroups().get(position);
+//        return container.peekTaskGroups().get(position);
+        AtomicReference<TaskContainer> item = new AtomicReference<>();
+        MemoryDataBase.INSTANCE.query(TaskContainerAdapter.this.groupID, TaskContainerAdapter.this.containerID, taskContainer -> {
+            if (taskContainer != null) {
+                TaskContainer fetched = taskContainer.peekTaskGroups().get(position);
+                if (fetched != null) {
+                    item.set(taskContainer.getRealm().copyFromRealm(fetched));
+                }
+            }
+        });
+        return item.get();
     }
 
     @Override

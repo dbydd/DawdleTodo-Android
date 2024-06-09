@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.mfrf.dawdletodo.data_center.MemoryDataBase;
 import com.mfrf.dawdletodo.ui.TaskContainerAdapter;
 import com.mfrf.dawdletodo.utils.BasicActivityForConvince;
 
@@ -18,12 +17,7 @@ public class ActivityTaskContainer extends BasicActivityForConvince {
         String id = fromIntent.getStringExtra("id");
         String group_id = fromIntent.getStringExtra("group");
         ListView containers = (ListView) findViewById(R.id.task_container_groups);
-        MemoryDataBase.INSTANCE.query(group_id, id, taskContainer -> {
-            if (containers != null) {
-                taskContainer = taskContainer.getRealm() == null ? taskContainer : taskContainer.getRealm().copyFromRealm(taskContainer);
-                containers.setAdapter(new TaskContainerAdapter(this.getBaseContext(), this, taskContainer, group_id));
-            }
-        });
+        containers.setAdapter(new TaskContainerAdapter(this.getBaseContext(), this, group_id, id));
 
         Button addTask = (Button) findViewById(R.id.button_add_task);
         addTask.setOnClickListener(v -> {

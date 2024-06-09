@@ -17,7 +17,7 @@ public class DatabaseHandler {
         if (!defaultInstance.isEmpty()) {
             AtomicReference<R> mapped = new AtomicReference<>();
             defaultInstance.executeTransaction(trans -> {
-                mapped.set(defaultInstance.copyFromRealm(defaultInstance.where(TaskTreeManager.class).equalTo("configID", id).findAll()).stream().findFirst().map(mapper).orElseGet(() -> defaultValue));
+                mapped.set(defaultInstance.where(TaskTreeManager.class).equalTo("configID", id).findAll().stream().findFirst().map(mapper).orElseGet(() -> defaultValue));
             });
             defaultInstance.close();
             return mapped.get();
