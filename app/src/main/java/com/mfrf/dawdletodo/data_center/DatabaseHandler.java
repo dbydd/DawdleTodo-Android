@@ -2,66 +2,80 @@ package com.mfrf.dawdletodo.data_center;
 
 import com.mfrf.dawdletodo.model.TaskTreeManager;
 
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Supplier;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import io.realm.Realm;
 
 public class DatabaseHandler {
 
 
-    public static void deserializeTaskGroups() {
+    public static <R> R operationTaskGroups(String id, Function<TaskTreeManager, R> mapper, R defaultValue) {
         Realm defaultInstance = Realm.getDefaultInstance();
         if (!defaultInstance.isEmpty()) {
-            MemoryDataBase.INSTANCE.TASK_GROUPS.clear();
-            defaultInstance.where(TaskTreeManager.class).findAll().stream().forEach(taskTreeManager -> {
-                MemoryDataBase.INSTANCE.TASK_GROUPS.put(taskTreeManager.getConfigID(), taskTreeManager);
-                MemoryDataBase.INSTANCE.DIRTY_MARKS.put(taskTreeManager.getConfigID(), new AtomicBoolean(false)); //ugly, but it works!
+            AtomicReference<R> mapped = new AtomicReference<>();
+            defaultInstance.executeTransaction(trans -> {
+                mapped.set(defaultInstance.copyFromRealm(defaultInstance.where(TaskTreeManager.class).equalTo("configID", id).findAll()).stream().findFirst().map(mapper).orElseGet(() -> defaultValue));
             });
+            defaultInstance.close();
+            return mapped.get();
         }
         defaultInstance.close();
+        return null;
     }
 
-    public static void serializeTaskGroups() {
+    public static void addTaskGroup(TaskTreeManager manager) {
         Realm defaultInstance = Realm.getDefaultInstance();
-        defaultInstance.executeTransaction(realm -> {
-            MemoryDataBase.INSTANCE.DIRTY_MARKS
-                    .entrySet()
-                    .stream()
-                    .filter(id_mark_entry -> id_mark_entry.getValue().get())
-                    .map(stringAtomicBooleanEntry ->
-                            MemoryDataBase.INSTANCE.TASK_GROUPS
-                                    .get(stringAtomicBooleanEntry.getKey()))
-                    .filter(Objects::nonNull)
-                    .forEach(manager -> {
-//                        realm.createOrUpdateObjectFromJson(TaskTreeManager.class, manager.toJSON());
-                        realm.copyToRealmOrUpdate(manager);
-                        manager.cleanDirty();
-                    });
-        });
+        defaultInstance.beginTransaction();
+        defaultInstance.copyToRealmOrUpdate(manager);
+        defaultInstance.commitTransaction();
         defaultInstance.close();
     }
 
-    public static void deserializeConfigOrDefault(String key, Supplier<Configuration> default_value) {
+    public static boolean hasTaskGroup(String id) {
+        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+        Realm defaultInstance = Realm.getDefaultInstance();
+        defaultInstance.executeTransaction(t ->
+                atomicBoolean.set(t.where(TaskTreeManager.class).equalTo("configID", id).findFirst() != null)
+        );
+        defaultInstance.close();
+        return atomicBoolean.get();
+    }
+
+//    public static void serializeTaskGroups(TaskTreeManager manager) {
+//        Realm defaultInstance = Realm.getDefaultInstance();
+//        defaultInstance.executeTransaction(realm -> {
+//            realm.copyToRealmOrUpdate(manager);
+//        });
+//        defaultInstance.close();
+//    }
+
+    public static void operationConfig(String configName, Consumer<Configuration> operator) { //Configuration only had primitive value
         Realm defaultInstance = Realm.getDefaultInstance();
         if (!defaultInstance.isEmpty()) {
-            Configuration.Instance = defaultInstance.where(Configuration.class).equalTo("name", "default").findFirst();
+            if (defaultInstance.where(Configuration.class).equalTo("name", configName).findFirst() == null) {
+                Configuration configuration = new Configuration();
+                configuration.setName(configName);
+                defaultInstance.copyToRealmOrUpdate(configuration);
+            }
+            operator.accept(defaultInstance.where(Configuration.class).equalTo("name", configName).findFirst());
         }
         defaultInstance.close();
     }
 
-    public static void serializeConfigValue() {
-        if (Configuration.dirty.get()) {
-            Realm defaultInstance = Realm.getDefaultInstance();
-            if (!defaultInstance.isEmpty()) {
-                defaultInstance.executeTransaction(realm -> {
-                    realm.copyToRealmOrUpdate(Configuration.Instance);
-                });
-                defaultInstance.close();
-            }
-        }
-    }
+//    public static void serializeConfigValue() {
+//        if (Configuration.dirty.get()) {
+//            Realm defaultInstance = Realm.getDefaultInstance();
+//            if (!defaultInstance.isEmpty()) {
+//                defaultInstance.executeTransaction(realm -> {
+//                    realm.copyToRealmOrUpdate(Configuration.Instance);
+//                });
+//                defaultInstance.close();
+//            }
+//        }
+//    }
 
 
 }

@@ -78,7 +78,7 @@ public class TaskContainerAdapter extends BaseAdapter {
 
         viewHolder.complete_current_task.setOnClickListener(view -> {
             item.markAsDone();
-            MemoryDataBase.INSTANCE.markDirty(groupID);
+//            MemoryDataBase.INSTANCE.markDirty(groupID);
             TaskContainerAdapter.this.notifyDataSetChanged();
         });
 

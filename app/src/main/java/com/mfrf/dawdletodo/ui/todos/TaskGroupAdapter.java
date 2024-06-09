@@ -71,7 +71,7 @@ public class TaskGroupAdapter extends BaseAdapter {
         viewHolder.task_desc.setText(item.getTaskDesc());
 
         viewHolder.complete_current_task.setOnClickListener(view -> {
-            MemoryDataBase.INSTANCE.query(item.getGroupID(), item.getTaskContainerID()).ifPresent(TaskContainer::markAsDone);
+            MemoryDataBase.INSTANCE.query(item.getGroupID(), item.getTaskContainerID(), TaskContainer::markAsDone);
         });
 
 
@@ -84,6 +84,7 @@ public class TaskGroupAdapter extends BaseAdapter {
         });
         return convertView;
     }
+
 
 
     static class ViewHolder {

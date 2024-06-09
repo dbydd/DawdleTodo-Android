@@ -1,41 +1,36 @@
 package com.mfrf.dawdletodo.data_center;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.mfrf.dawdletodo.exceptions.AddTaskError;
 import com.mfrf.dawdletodo.model.Task;
 import com.mfrf.dawdletodo.model.TaskContainer;
 import com.mfrf.dawdletodo.model.TaskTreeManager;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 public enum MemoryDataBase {
     INSTANCE();
 
 
-    public HashMap<String, AtomicBoolean> DIRTY_MARKS = new HashMap<>();
-    public HashMap<String, TaskTreeManager> TASK_GROUPS = new HashMap<>() {
-        @Nullable
-        @Override
-        public TaskTreeManager put(String key, TaskTreeManager value) {
-            TaskTreeManager put = super.put(key, value);
-            DIRTY_MARKS.compute(key, (k, v) -> v == null ? new AtomicBoolean(true) : v);
-            return put;
-        }
-
-        @Nullable
-        @Override
-        public TaskTreeManager compute(String key, @NonNull BiFunction<? super String, ? super TaskTreeManager, ? extends TaskTreeManager> remappingFunction) {
-            TaskTreeManager compute = super.compute(key, remappingFunction);
-            DIRTY_MARKS.compute(key, (k, v) -> v == null ? new AtomicBoolean(true) : v);
-            return compute;
-        }
-    };
+//    public HashMap<String, AtomicBoolean> DIRTY_MARKS = new HashMap<>();
+//    public HashMap<String, TaskTreeManager> TASK_GROUPS = new HashMap<>() {
+//        @Nullable
+//        @Override
+//        public TaskTreeManager put(String key, TaskTreeManager value) {
+//            TaskTreeManager put = super.put(key, value);
+//            DIRTY_MARKS.compute(key, (k, v) -> v == null ? new AtomicBoolean(true) : v);
+//            return put;
+//        }
+//
+//        @Nullable
+//        @Override
+//        public TaskTreeManager compute(String key, @NonNull BiFunction<? super String, ? super TaskTreeManager, ? extends TaskTreeManager> remappingFunction) {
+//            TaskTreeManager compute = super.compute(key, remappingFunction);
+//            DIRTY_MARKS.compute(key, (k, v) -> v == null ? new AtomicBoolean(true) : v);
+//            return compute;
+//        }
+//    };
 
     {
         TaskTreeManager test = new TaskTreeManager("test");
@@ -67,36 +62,40 @@ public enum MemoryDataBase {
         } catch (AddTaskError e) {
             throw new RuntimeException(e);
         }
-        this.TASK_GROUPS.put("test", test);
+        DatabaseHandler.addTaskGroup(test);
 
     }
 
-    public TaskTreeManager remove_task_group(String id) {
-        TaskTreeManager remove = this.TASK_GROUPS.remove(id);
-        DIRTY_MARKS.remove(id);
-        return remove;
+    public void remove_task_group(String id) {
+        DatabaseHandler.operationTaskGroups(id, manager -> {
+            manager.deleteFromRealm();
+            manager = null;
+            return Optional.empty();
+        }, Optional.empty());
     }
 
     public boolean add_task_container(TaskContainer g, String parent_node, String group_id) {
-        this.TASK_GROUPS.compute(group_id, (s, taskTreeManager) -> {
-            //todo solve errors
+
+        if (!DatabaseHandler.hasTaskGroup(group_id)) {
+            DatabaseHandler.addTaskGroup(new TaskTreeManager(group_id));
+        }
+        DatabaseHandler.operationTaskGroups(group_id, manager -> {
             try {
-                return (taskTreeManager == null ? new TaskTreeManager(group_id) : taskTreeManager).addTo(parent_node, g);
-            } catch (AddTaskError.AddTaskToAtomickContainerError e) {
-                throw new RuntimeException(e);
+                manager.addTo(parent_node, g);
             } catch (AddTaskError e) {
                 throw new RuntimeException(e);
             }
-        });
+            return Optional.empty();
+        }, Optional.empty());
         return false;
     }
 
-    public void markDirty(String id) {
-        DIRTY_MARKS.put(id, new AtomicBoolean(true));
-    }
-
-    public Optional<TaskContainer> query(String taskGroup, String taskContainer) {
-        return this.TASK_GROUPS.containsKey(taskGroup) ? Optional.of(TASK_GROUPS.get(taskGroup).find(taskContainer)) : Optional.empty();
+    public void query(String taskGroup, String taskContainer, Consumer<TaskContainer> input_nullable_operation) {
+//        return DatabaseHandler.operationTaskGroups()Optional.of(TASK_GROUPS.get(taskGroup).find(taskContainer)) : Optional.empty();
+        DatabaseHandler.operationTaskGroups(taskGroup, manager -> {
+            input_nullable_operation.accept(manager.find(taskContainer));
+            return Optional.empty();
+        }, Optional.empty());
     }
 
 

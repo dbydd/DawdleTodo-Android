@@ -27,8 +27,6 @@ public class DawdleTodo extends Application {
 
 //        ((Runnable) () -> {
             //since android cannot add event of app killed, so we can only save data periodically
-            DatabaseHandler.deserializeConfigOrDefault("default", Configuration::new);
-            DatabaseHandler.deserializeTaskGroups(); // lag!
             databaseTask.schedule(new DatabaseTask(databaseTask), 30 * 1000, 30 * 1000); //best initial period
 //        }).run();
     }
