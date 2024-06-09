@@ -6,7 +6,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.mfrf.dawdletodo.data_center.MemoryDataBase;
-import com.mfrf.dawdletodo.model.task_container.AbstractTaskContainer;
+import com.mfrf.dawdletodo.model.TaskContainer;
 import com.mfrf.dawdletodo.ui.TaskContainerAdapter;
 import com.mfrf.dawdletodo.utils.BasicActivityForConvince;
 
@@ -21,7 +21,7 @@ public class ActivityTaskContainer extends BasicActivityForConvince {
         String id = fromIntent.getStringExtra("id");
         String group_id = fromIntent.getStringExtra("group");
         ListView containers = (ListView) findViewById(R.id.task_container_groups);
-        Optional<AbstractTaskContainer> query = MemoryDataBase.INSTANCE.query(group_id, id);
+        Optional<TaskContainer> query = MemoryDataBase.INSTANCE.query(group_id, id);
         query.ifPresent(c -> {
             containers.setAdapter(new TaskContainerAdapter(this.getBaseContext(), this, c, group_id));
         });
@@ -30,11 +30,10 @@ public class ActivityTaskContainer extends BasicActivityForConvince {
         addTask.setOnClickListener(v -> {
             this.build_intent.accept(new Intent_ActivityPairProcessor(intent -> {
 //                intent.putExtras(fromIntent.getExtras().deepCopy());
-                intent.putExtra("id",id);
-                intent.putExtra("group",group_id);
+                intent.putExtra("id", id);
+                intent.putExtra("group", group_id);
             }, AddTaskActivity.class));
         });
-
 
 
     }

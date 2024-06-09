@@ -35,7 +35,8 @@ public class DatabaseHandler {
                                     .get(stringAtomicBooleanEntry.getKey()))
                     .filter(Objects::nonNull)
                     .forEach(manager -> {
-                        realm.createOrUpdateObjectFromJson(TaskTreeManager.class, manager.toJSON());
+//                        realm.createOrUpdateObjectFromJson(TaskTreeManager.class, manager.toJSON());
+                        realm.copyToRealmOrUpdate(manager);
                         manager.cleanDirty();
                     });
         });

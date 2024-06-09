@@ -1,21 +1,30 @@
 package com.mfrf.dawdletodo.model;
 
+import com.mfrf.dawdletodo.utils.TypeConverter;
+
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Date;
 
-public class Task implements Serializable, Cloneable {
-    private final String id;
-    private final String description;
-    private final int initial_priority;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.RealmClass;
 
-    private final LocalDate begin_date;
-    private final LocalDate end_date;
-    private final int expected_complete_times;
+@RealmClass
+public class Task extends RealmObject implements Serializable, Cloneable {
+    @PrimaryKey
+    private String id;
+    private String description;
+    private int initial_priority;
+
+    private Date begin_date;
+    private Date end_date;
+    private int expected_complete_times;
     private int complete_times = 0;
 
-    private final boolean infini_long;
+    private boolean infini_long;
 
-    public Task(String id, String description, int initialPriority, LocalDate beginDate, LocalDate endDate, int expectedCompleteTime) {
+    public Task(String id, String description, int initialPriority, Date beginDate, Date endDate, int expectedCompleteTime) {
         this.id = id;
         this.description = description;
         initial_priority = initialPriority;
@@ -25,6 +34,13 @@ public class Task implements Serializable, Cloneable {
         infini_long = expectedCompleteTime <= 0;
     }
 
+    public Task() {
+        this("placeholder", "this should not happen", 0, LocalDate.now(), LocalDate.now(), 0);
+    }
+
+    public Task(String id, String desc, int initialPriority, LocalDate begin, LocalDate end, int maxValue) {
+        this(id, desc, initialPriority, TypeConverter.localeDate2Date(begin), TypeConverter.localeDate2Date(end), maxValue);
+    }
 
     public int getCompleteTimes() {
         return complete_times;
@@ -54,11 +70,11 @@ public class Task implements Serializable, Cloneable {
         return initial_priority;
     }
 
-    public LocalDate getBegin_date() {
+    public Date getBegin_date() {
         return begin_date;
     }
 
-    public LocalDate getEnd_date() {
+    public Date getEnd_date() {
         return end_date;
     }
 

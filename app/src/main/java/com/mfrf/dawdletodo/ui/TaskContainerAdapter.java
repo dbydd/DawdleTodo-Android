@@ -14,8 +14,9 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.mfrf.dawdletodo.ActivityTaskContainer;
 import com.mfrf.dawdletodo.R;
+import com.mfrf.dawdletodo.data_center.MemoryDataBase;
 import com.mfrf.dawdletodo.model.Task;
-import com.mfrf.dawdletodo.model.task_container.AbstractTaskContainer;
+import com.mfrf.dawdletodo.model.TaskContainer;
 import com.mfrf.dawdletodo.utils.BasicActivityForConvince;
 
 import java.util.Optional;
@@ -23,10 +24,10 @@ import java.util.Optional;
 public class TaskContainerAdapter extends BaseAdapter {
     private final Context context;
     private final FragmentActivity activity;
-    private AbstractTaskContainer container;
+    private TaskContainer container;
     private final String groupID;
 
-    public TaskContainerAdapter(Context context, FragmentActivity activity, AbstractTaskContainer container, String groupID) {
+    public TaskContainerAdapter(Context context, FragmentActivity activity, TaskContainer container, String groupID) {
         this.context = context;
         this.activity = activity;
         this.container = container;
@@ -67,24 +68,25 @@ public class TaskContainerAdapter extends BaseAdapter {
         }
 
 //        taskgroupdataentryentry item = itemlist.get(position);
-        AbstractTaskContainer item = (AbstractTaskContainer) getItem(position);
+        TaskContainer item = (TaskContainer) getItem(position);
         Optional<Task> peeked = item.peek_task();
 
 
         viewHolder.logo.setImageResource(R.drawable.todos);
-        viewHolder.group_describe.setText(item.getContainerID());
+        viewHolder.group_describe.setText(item.getId());
         viewHolder.task_desc.setText(peeked.isPresent() ? peeked.get().getDescription() : "null");
 
         viewHolder.complete_current_task.setOnClickListener(view -> {
             item.markAsDone();
+            MemoryDataBase.INSTANCE.markDirty(groupID);
             TaskContainerAdapter.this.notifyDataSetChanged();
         });
 
 
         convertView.findViewById(R.id.actually_button_to_lower).setOnClickListener(view -> {
-            if (item.couldHasChild()) {
+            if (!item.isAtomic()) {
                 ((BasicActivityForConvince) activity).build_intent.accept(new BasicActivityForConvince.Intent_ActivityPairProcessor(intent -> {
-                    intent.putExtra("id", item.getContainerID());
+                    intent.putExtra("id", item.getId());
                     intent.putExtra("group", groupID);
                 },
                         ActivityTaskContainer.class));

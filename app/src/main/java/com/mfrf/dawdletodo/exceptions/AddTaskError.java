@@ -1,7 +1,7 @@
 package com.mfrf.dawdletodo.exceptions;
 
 public class AddTaskError extends Exception {
-    private AddTaskError(String message) {
+    public AddTaskError(String message) {
         super(message);
     }
 
@@ -14,11 +14,11 @@ public class AddTaskError extends Exception {
         }
     }
 
-    public static class CannotAddToSingleTaskContainerError extends AddTaskError {
+    public static class AddTaskToAtomickContainerError extends AddTaskError {
 
-        public CannotAddToSingleTaskContainerError() {
+        public AddTaskToAtomickContainerError() {
             super(
-                    "cannot add group to single task container "
+                    "cannot add group to Atomic task container "
             );
         }
     }

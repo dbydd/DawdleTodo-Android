@@ -16,7 +16,7 @@ import com.mfrf.dawdletodo.ActivityTaskContainer;
 import com.mfrf.dawdletodo.MainActivity;
 import com.mfrf.dawdletodo.R;
 import com.mfrf.dawdletodo.data_center.MemoryDataBase;
-import com.mfrf.dawdletodo.model.task_container.AbstractTaskContainer;
+import com.mfrf.dawdletodo.model.TaskContainer;
 import com.mfrf.dawdletodo.utils.BasicActivityForConvince;
 
 import java.util.stream.Collectors;
@@ -71,7 +71,7 @@ public class TaskGroupAdapter extends BaseAdapter {
         viewHolder.task_desc.setText(item.getTaskDesc());
 
         viewHolder.complete_current_task.setOnClickListener(view -> {
-            MemoryDataBase.INSTANCE.query(item.getGroupID(), item.getTaskContainerID()).ifPresent(AbstractTaskContainer::markAsDone);
+            MemoryDataBase.INSTANCE.query(item.getGroupID(), item.getTaskContainerID()).ifPresent(TaskContainer::markAsDone);
         });
 
 

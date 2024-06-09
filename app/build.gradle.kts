@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
+//    id("kotlin-kapt") apply  true
+    id("realm-android") apply true
 }
 
 android {

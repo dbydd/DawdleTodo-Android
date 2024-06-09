@@ -11,9 +11,7 @@ import androidx.annotation.Nullable;
 
 import com.mfrf.dawdletodo.R;
 import com.mfrf.dawdletodo.enums.EnumTaskType;
-import com.mfrf.dawdletodo.model.task_container.AbstractTaskContainer;
-import com.mfrf.dawdletodo.model.task_container.DailyTaskContainer;
-import com.mfrf.dawdletodo.model.task_container.PriorityBasedTaskContainer;
+import com.mfrf.dawdletodo.model.TaskContainer;
 
 import java.util.Optional;
 
@@ -33,15 +31,9 @@ public class AddNormalTaskContainersFragment extends AddtaskBaseFragment {
     }
 
     @Override
-    public Optional<? extends AbstractTaskContainer> getTask() {
+    public Optional<TaskContainer> getTask() {
 
         View self = getView();
-        return extractText((EditText) self.findViewById(R.id.task_id), true).map(task_id ->
-                switch (type) {
-                    case Daily -> new DailyTaskContainer(task_id);
-                    case Priority -> new PriorityBasedTaskContainer(task_id);
-                    default -> null; //impossible branch
-                }
-        );
+        return extractText((EditText) self.findViewById(R.id.task_id), true).map(TaskContainer::new);
     }
 }

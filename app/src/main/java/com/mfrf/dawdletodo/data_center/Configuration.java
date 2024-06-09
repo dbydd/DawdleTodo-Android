@@ -5,21 +5,23 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.RealmClass;
 
+@RealmClass
 public class Configuration extends RealmObject {
     public static AtomicBoolean dirty = new AtomicBoolean(true);
-    public static Configuration Instance = new Configuration("default");
-
-    static {
-        DatabaseHandler.deserializeConfigOrDefault("default", () -> new Configuration("default"));
-    }
+    public static Configuration Instance = new Configuration();
 
     @PrimaryKey
-    private final UUID id;
+    private UUID id;
     public String name; //just for future more extensions
     private int auto_save_interval;
 
-    Configuration(String name) {
+    public Configuration() {
+        this("default");
+    }
+
+    public Configuration(String name) {
         this.id = UUID.randomUUID();
         this.name = name;
         auto_save_interval = 60;

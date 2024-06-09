@@ -24,9 +24,13 @@ public class DawdleTodo extends Application {
         Realm.setDefaultConfiguration(config);
 
         this.databaseTask = new Timer("database", true);
-        databaseTask.schedule(new DatabaseTask(databaseTask), 0, 60); //best initial period
-        //since android cannot add event of app killed, so we can only save data periodically
-        DatabaseHandler.deserializeTaskGroups(); // lag!
+
+        ((Runnable) () -> {
+            //since android cannot add event of app killed, so we can only save data periodically
+            DatabaseHandler.deserializeConfigOrDefault("default", Configuration::new);
+            DatabaseHandler.deserializeTaskGroups(); // lag!
+            databaseTask.schedule(new DatabaseTask(databaseTask), 30 * 1000, 30 * 1000); //best initial period
+        }).run();
     }
 
     class DatabaseTask extends TimerTask {
@@ -41,9 +45,9 @@ public class DawdleTodo extends Application {
             if (Configuration.dirty.get()) {
                 DatabaseHandler.serializeConfigValue();
                 int autoSaveInterval = Configuration.Instance.getAuto_save_interval();
-                if (autoSaveInterval != this.scheduledExecutionTime()) {
+                if (autoSaveInterval * 1000L != this.scheduledExecutionTime()) {
                     this.cancel();
-                    selfTimerRef.schedule(new DatabaseTask(selfTimerRef), autoSaveInterval);
+                    selfTimerRef.schedule(new DatabaseTask(selfTimerRef), autoSaveInterval * 1000L);
                 }
             }
 

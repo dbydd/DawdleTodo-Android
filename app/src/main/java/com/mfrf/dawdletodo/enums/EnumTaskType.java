@@ -6,7 +6,7 @@ import com.mfrf.dawdletodo.ui.addtask.AddAtomicTaskFragment;
 import com.mfrf.dawdletodo.ui.addtask.AddNormalTaskContainersFragment;
 
 public enum EnumTaskType {
-    Daily("daily_task"), Priority("priority_based_task"), Atomic("atomic_task");
+    Priority("priority_based_task"), Atomic("atomic_task");
 
     private final String translationKey;
 
@@ -21,7 +21,7 @@ public enum EnumTaskType {
 
     public Fragment createFragment() {
         return switch (this) {
-            case Daily, Priority -> new AddNormalTaskContainersFragment(this);
+            case Priority -> new AddNormalTaskContainersFragment(this);
             case Atomic -> new AddAtomicTaskFragment();
 
         };
