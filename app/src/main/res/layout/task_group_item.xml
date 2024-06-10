@@ -8,6 +8,7 @@
     android:background="@color/material_dynamic_primary60">
 
     <LinearLayout
+        android:id="@+id/entire_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -26,7 +27,7 @@
                 android:src="@drawable/todos" />
 
             <TextView
-                android:id="@+id/task_group_describe"
+                android:id="@+id/task_to_be_done"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="5"

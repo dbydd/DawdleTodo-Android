@@ -7,13 +7,13 @@ public class TaskGroupDataEntry {
     private String id;
     private String taskContainerID;
     private String describe;
-    private Task task_cloned_for_view;
+    private Task task_to_be_done;
 
-    public TaskGroupDataEntry(int imageResId, String id, String describe, Task task_cloned_for_view, String taskContainerID) {
+    public TaskGroupDataEntry(int imageResId, String id, String describe, Task task_to_be_done, String taskContainerID) {
         this.imageResId = imageResId;
         this.id = id;
         this.describe = describe;
-        this.task_cloned_for_view = task_cloned_for_view;
+        this.task_to_be_done = task_to_be_done;
         this.taskContainerID = taskContainerID;
     }
 
@@ -34,6 +34,10 @@ public class TaskGroupDataEntry {
     }
 
     public String getTaskDesc() {
-        return task_cloned_for_view.getDescription();
+        return task_to_be_done.getDescription();
+    }
+
+    public String getTaskTobeDone() {
+        return task_to_be_done.getId();
     }
 }

@@ -1,5 +1,7 @@
 package com.mfrf.dawdletodo.ui;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,15 +16,17 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.mfrf.dawdletodo.ActivityTaskContainer;
 import com.mfrf.dawdletodo.R;
-import com.mfrf.dawdletodo.data_center.DatabaseHandler;
 import com.mfrf.dawdletodo.data_center.MemoryDataBase;
 import com.mfrf.dawdletodo.model.Task;
 import com.mfrf.dawdletodo.model.TaskContainer;
+import com.mfrf.dawdletodo.model.TaskTreeManager;
 import com.mfrf.dawdletodo.utils.BasicActivityForConvince;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+
+import io.realm.Realm;
 
 public class TaskContainerAdapter extends BaseAdapter {
     private final Context context;
@@ -50,17 +54,11 @@ public class TaskContainerAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-//        return container.peekTaskGroups().get(position);
-        AtomicReference<TaskContainer> item = new AtomicReference<>();
-        MemoryDataBase.INSTANCE.query(TaskContainerAdapter.this.groupID, TaskContainerAdapter.this.containerID, taskContainer -> {
-            if (taskContainer != null) {
-                TaskContainer fetched = taskContainer.peekTaskGroups().get(position);
-                if (fetched != null) {
-                    item.set(taskContainer.getRealm().copyFromRealm(fetched));
-                }
-            }
-        });
-        return item.get();
+        return (Consumer<Consumer<TaskContainer>>) taskTreeManagerConsumer -> { //return a callback function, this is best solution
+            MemoryDataBase.INSTANCE.query(groupID, containerID, taskContainer -> {
+                taskTreeManagerConsumer.accept(taskContainer.peekTaskGroups().get(position));
+            });
+        };
     }
 
     @Override
@@ -77,7 +75,7 @@ public class TaskContainerAdapter extends BaseAdapter {
 
             viewHolder = new TaskContainerAdapter.ViewHolder();
             viewHolder.logo = convertView.findViewById(R.id.task_logo);
-            viewHolder.group_describe = convertView.findViewById(R.id.task_group_describe);
+            viewHolder.task_to_be_done = convertView.findViewById(R.id.task_to_be_done);
             viewHolder.task_desc = convertView.findViewById(R.id.task_desc);
             viewHolder.complete_current_task = convertView.findViewById(R.id.complete_current_task);
 
@@ -86,51 +84,80 @@ public class TaskContainerAdapter extends BaseAdapter {
             viewHolder = (TaskContainerAdapter.ViewHolder) convertView.getTag();
         }
 
-        TaskContainer item = (TaskContainer) getItem(position);
-        Optional<Task> peeked = item.peek_task();
-        viewHolder.logo.setImageResource(R.drawable.todos);
-        viewHolder.group_describe.setText(item.getId());
-        viewHolder.task_desc.setText(peeked.isPresent() ? peeked.get().getDescription() : "null");
-        viewHolder.task_desc.setText(peeked.isPresent() ? peeked.get().getDescription() : "null");
 
+        View finalConvertView = convertView;
+        ((Consumer<Consumer<TaskContainer>>) getItem(position)).accept(taskContainer -> {
+            taskContainer.peek_task().or(() -> Optional.of(new Task())).ifPresent(peeked_task -> {
+                viewHolder.logo.setImageResource(R.drawable.todos); //temporary solution
+                viewHolder.task_to_be_done.setText(peeked_task.getId());
+                viewHolder.task_desc.setText(peeked_task.getDescription());
+            });
+
+
+        });
 
         viewHolder.complete_current_task.setOnClickListener(view -> {
-            item.markAsDone().ifPresent(t -> {
-                DatabaseHandler.operationTaskGroups(groupID, manager -> {
-                    manager.delete(t.getId());
-                    return Optional.empty();
-                }, Optional.empty());
+            ((Consumer<Consumer<TaskContainer>>) getItem(position)).accept(taskContainer -> {
+                taskContainer.markAsDone().ifPresent(t -> {
+                    t.deleteFromRealm();
+                });
+
+                taskContainer.peek_task().ifPresentOrElse(peek_again -> {
+                    viewHolder.logo.setImageResource(R.drawable.todos); //temporary solution
+                    viewHolder.task_to_be_done.setText(peek_again.getId());
+                    viewHolder.task_desc.setText(peek_again.getDescription());
+                }, () -> {
+                    ((Activity) view.getContext()).finish();
+                });
             });
-//            MemoryDataBase.INSTANCE.markDirty(groupID);
-
-            TaskContainer refresh_item = (TaskContainer) getItem(position);
-            Optional<Task> refreshed = refresh_item.peek_task();
-            viewHolder.logo.setImageResource(R.drawable.todos);
-            viewHolder.group_describe.setText(refresh_item.getId());
-            viewHolder.task_desc.setText(refreshed.isPresent() ? refreshed.get().getDescription() : "null");
-            viewHolder.task_desc.setText(refreshed.isPresent() ? refreshed.get().getDescription() : "null");
-            TaskContainerAdapter.this.notifyDataSetChanged();
         });
 
-
-        convertView.findViewById(R.id.actually_button_to_lower).setOnClickListener(view -> {
-            if (!item.isAtomic()) {
-                ((BasicActivityForConvince) activity).build_intent.accept(new BasicActivityForConvince.Intent_ActivityPairProcessor(intent -> {
-                    intent.putExtra("id", item.getId());
-                    intent.putExtra("group", groupID);
-                },
-                        ActivityTaskContainer.class));
-            } else {
-                Toast.makeText(TaskContainerAdapter.this.context, "cannot add a task that couldn't have child!", Toast.LENGTH_SHORT).show();
-            }
+        finalConvertView.findViewById(R.id.actually_button_to_lower).setOnClickListener(view -> {
+            ((Consumer<Consumer<TaskContainer>>) getItem(position)).accept(taskContainer -> {
+                if (!taskContainer.isAtomic()) {
+                    ((BasicActivityForConvince) activity).build_intent.accept(new BasicActivityForConvince.Intent_ActivityPairProcessor(intent -> {
+                        intent.putExtra("id", taskContainer.getId());
+                        intent.putExtra("group", groupID);
+                    },
+                            ActivityTaskContainer.class));
+                } else {
+                    Toast.makeText(TaskContainerAdapter.this.context, "cannot add a task that couldn't have child!", Toast.LENGTH_SHORT).show();
+                }
+            });
         });
+
+        View entireItem = convertView.findViewById(R.id.entire_item);
+        entireItem.setLongClickable(true);
+        entireItem.setOnLongClickListener(v -> {
+            ((Consumer<Consumer<TaskContainer>>) getItem(position)).accept(manager -> {
+                new AlertDialog.Builder(context)
+                        .setTitle(manager.getId())
+                        .setMessage("你确认要删除这个任务组嘛？")
+                        .setPositiveButton("删除", ((dialog, which) -> {
+//                            ((Consumer<Consumer<TaskContainer>>) getItem(position)).accept(manager_not_above_one -> {
+//                                manager_not_above_one.deleteFromRealm();
+//                                TaskContainerAdapter.this.notifyDataSetChanged();
+//                            });
+                            try (Realm defaultInstance = Realm.getDefaultInstance()) {
+                                defaultInstance.executeTransaction(t -> {
+                                    t.where(TaskTreeManager.class).equalTo("configID", groupID).findFirst() // 100% exist
+                                            .find(containerID).peekTaskGroups().get(position).deleteFromRealm();
+
+                                });
+                            }
+                            TaskContainerAdapter.this.notifyDataSetChanged();
+                        })).show();
+            });
+            return true;
+        });
+
         return convertView;
     }
 
 
     static class ViewHolder {
         ImageView logo;
-        TextView group_describe;
+        TextView task_to_be_done;
 
         TextView task_desc;
         Button complete_current_task;

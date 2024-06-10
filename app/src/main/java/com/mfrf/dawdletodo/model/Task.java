@@ -35,7 +35,7 @@ public class Task extends RealmObject implements Serializable, Cloneable {
     }
 
     public Task() {
-        this("placeholder", "empty!", 0, LocalDate.now(), LocalDate.now(), 0);
+        this("empty", "empty!", 0, LocalDate.now(), LocalDate.now(), 0);
     }
 
     public Task(String id, String desc, int initialPriority, LocalDate begin, LocalDate end, int maxValue) {

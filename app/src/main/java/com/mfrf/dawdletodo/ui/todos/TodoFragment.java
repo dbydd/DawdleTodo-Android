@@ -33,16 +33,17 @@ public class TodoFragment extends Fragment {
 
         ListView todoGroups = binding.todoGroups;
         FragmentActivity activity = getActivity();
-        todoGroups.setAdapter(
-                new TaskGroupAdapter(
-                        getContext(),
-                        activity
-                )
+
+        TaskGroupAdapter taskGroupAdapter = new TaskGroupAdapter(
+                getContext(),
+                activity
         );
+        todoGroups.setAdapter(taskGroupAdapter);
 
         FloatingActionButton addTaskGroup = binding.addTaskGroup;
         addTaskGroup.setOnClickListener(v -> {
             showInputDialog();
+            taskGroupAdapter.notifyDataSetChanged();
         });
 
         return root;

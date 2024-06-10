@@ -29,7 +29,7 @@ public class TaskContainer extends RealmObject {
 
     public TaskContainer(String id, TaskContainer... childs) {
         this.id = id;
-        this.childs.addAll(Arrays.stream(childs).toList());
+        this.getChilds().addAll(Arrays.stream(childs).toList());
     }
 
     public TaskContainer(Task task) {
@@ -41,7 +41,7 @@ public class TaskContainer extends RealmObject {
     }
 
     public boolean isAtomic() {
-        return nullableTask != null;
+        return getNullableTask() != null;
     }
 
     public TaskContainer find(String node_id) {
@@ -51,7 +51,7 @@ public class TaskContainer extends RealmObject {
         if (this.isAtomic()) {
             return null;
         }
-        for (TaskContainer child : childs) {
+        for (TaskContainer child : getChilds()) {
             TaskContainer taskContainer = child.find(node_id);
             if (taskContainer != null) {
                 return taskContainer;
@@ -64,7 +64,7 @@ public class TaskContainer extends RealmObject {
         if (this.isAtomic()) {
             throw new AddTaskError.AddTaskToAtomickContainerError();
         }
-        this.childs.add(container);
+        this.getChilds().add(container);
     }
 
     public HashMap<String, Integer> countItems(HashMap<String, Integer> counter) {
@@ -72,7 +72,7 @@ public class TaskContainer extends RealmObject {
             counter.compute("Atomic Task", (s, count) -> count == null ? 1 : count + 1);
         } else {
             counter.compute("Container", (s, count) -> count == null ? 1 : count + 1);
-            childs.forEach(taskContainer -> taskContainer.countItems(counter));
+            getChilds().forEach(taskContainer -> taskContainer.countItems(counter));
         }
         return counter;
     }
@@ -80,9 +80,9 @@ public class TaskContainer extends RealmObject {
     public Integer priority() {
         if (this.isAtomic()) {
 
-            int ret = PriorityModifiers.SimpleDeadlinePriorityModifier(nullableTask.getInitial_priority(), nullableTask.getBegin_date(), nullableTask.getEnd_date(), LocalDate.now());
-            if (!nullableTask.isInfini_long()) {
-                ret = PriorityModifiers.SimpleCompleteTimeModifier(ret, nullableTask.getExpected_complete_times(), nullableTask.getCompleteTimes());
+            int ret = PriorityModifiers.SimpleDeadlinePriorityModifier(getNullableTask().getInitial_priority(), getNullableTask().getBegin_date(), getNullableTask().getEnd_date(), LocalDate.now());
+            if (!getNullableTask().isInfini_long()) {
+                ret = PriorityModifiers.SimpleCompleteTimeModifier(ret, getNullableTask().getExpected_complete_times(), getNullableTask().getCompleteTimes());
             }
             return ret;
         }
@@ -95,9 +95,9 @@ public class TaskContainer extends RealmObject {
 
     public Optional<Task> peek_task() {
         if (this.isAtomic()) {
-            assert nullableTask != null;
-            return Optional.of(nullableTask);
-        } else if (this.childs.isEmpty()) {
+            assert getNullableTask() != null;
+            return Optional.of(getNullableTask());
+        } else if (this.getChilds().isEmpty()) {
             return Optional.empty();
         } else {
             return peek().peek_task();
@@ -109,16 +109,16 @@ public class TaskContainer extends RealmObject {
             return this;
         } else {
             PriorityQueue<TaskContainer> childs = new PriorityQueue<>(Comparator.comparingInt(TaskContainer::priority));
-            childs.addAll(this.childs); //actually store a ref, so it's ok!
+            childs.addAll(this.getChilds()); //actually store a ref, so it's ok!
             return childs.peek();
         }
     }
 
     public Optional<TaskContainer> markAsDone() {//not empty: item should be delete
         if (this.isAtomic()) {
-            this.nullableTask.incCompleteTimes();
-            if (this.nullableTask.getExpected_complete_times() <= nullableTask.getCompleteTimes()) {
-                return Optional.of(this);
+            this.getNullableTask().incCompleteTimes();
+            if (this.getNullableTask().getExpected_complete_times() <= getNullableTask().getCompleteTimes()) {
+                return Optional.ofNullable(this);
             }
             return Optional.empty();
         } else {
@@ -126,14 +126,21 @@ public class TaskContainer extends RealmObject {
             if (poll != null) {
                 return poll.markAsDone();
             } else {
-                return Optional.of(this); // while nothing left , drop self
+                return Optional.ofNullable(this); // while nothing left , drop self
             }
         }
     }
 
     public ArrayList<TaskContainer> peekTaskGroups() {
-        return new ArrayList<>(this.childs);
+        return new ArrayList<>(this.getChilds().stream().toList());
     }
 
+    @Nullable
+    private Task getNullableTask() {
+        return nullableTask;
+    }
 
+    public RealmList<TaskContainer> getChilds() {
+        return childs;
+    }
 }
