@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.mfrf.dawdletodo.ActivityTaskContainer;
 import com.mfrf.dawdletodo.R;
+import com.mfrf.dawdletodo.data_center.DatabaseHandler;
 import com.mfrf.dawdletodo.data_center.MemoryDataBase;
 import com.mfrf.dawdletodo.model.Task;
 import com.mfrf.dawdletodo.model.TaskContainer;
@@ -85,18 +86,29 @@ public class TaskContainerAdapter extends BaseAdapter {
             viewHolder = (TaskContainerAdapter.ViewHolder) convertView.getTag();
         }
 
-//        taskgroupdataentryentry item = itemlist.get(position);
         TaskContainer item = (TaskContainer) getItem(position);
         Optional<Task> peeked = item.peek_task();
-
-
         viewHolder.logo.setImageResource(R.drawable.todos);
         viewHolder.group_describe.setText(item.getId());
         viewHolder.task_desc.setText(peeked.isPresent() ? peeked.get().getDescription() : "null");
+        viewHolder.task_desc.setText(peeked.isPresent() ? peeked.get().getDescription() : "null");
+
 
         viewHolder.complete_current_task.setOnClickListener(view -> {
-            item.markAsDone();
+            item.markAsDone().ifPresent(t -> {
+                DatabaseHandler.operationTaskGroups(groupID, manager -> {
+                    manager.delete(t.getId());
+                    return Optional.empty();
+                }, Optional.empty());
+            });
 //            MemoryDataBase.INSTANCE.markDirty(groupID);
+
+            TaskContainer refresh_item = (TaskContainer) getItem(position);
+            Optional<Task> refreshed = refresh_item.peek_task();
+            viewHolder.logo.setImageResource(R.drawable.todos);
+            viewHolder.group_describe.setText(refresh_item.getId());
+            viewHolder.task_desc.setText(refreshed.isPresent() ? refreshed.get().getDescription() : "null");
+            viewHolder.task_desc.setText(refreshed.isPresent() ? refreshed.get().getDescription() : "null");
             TaskContainerAdapter.this.notifyDataSetChanged();
         });
 

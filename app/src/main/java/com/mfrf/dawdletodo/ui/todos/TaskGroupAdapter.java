@@ -1,7 +1,6 @@
 package com.mfrf.dawdletodo.ui.todos;
 
 import android.content.Context;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,6 @@ import com.mfrf.dawdletodo.MainActivity;
 import com.mfrf.dawdletodo.R;
 import com.mfrf.dawdletodo.data_center.MemoryDataBase;
 import com.mfrf.dawdletodo.model.Task;
-import com.mfrf.dawdletodo.model.TaskContainer;
 import com.mfrf.dawdletodo.model.TaskTreeManager;
 import com.mfrf.dawdletodo.utils.BasicActivityForConvince;
 
@@ -90,17 +88,31 @@ public class TaskGroupAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-//        TaskGroupDataEntry item = MemoryDataBase.INSTANCE.TASK_GROUPS.entrySet().stream().map(kv -> Pair.create(kv, kv.getValue().advice())).filter(p -> p.second.isPresent()).map(p -> new TaskGroupDataEntry(R.drawable.todos, p.first.getKey(), "tasks: " + p.first.getValue().countItems(), p.second.get().second.clone(), p.second.get().first)).collect(Collectors.toList()).get(position);
         TaskTreeManager fetched_clone = (TaskTreeManager) getItem(position);
-        Pair<String, Task> advice = fetched_clone.advice().get();
-        TaskGroupDataEntry item = new TaskGroupDataEntry(R.drawable.todos, fetched_clone.getConfigID(), "tasks: " + fetched_clone.countItems(), advice.second, advice.first);
+        TaskGroupDataEntry item =
+                fetched_clone.advice().map(advice ->
+                        new TaskGroupDataEntry(R.drawable.todos, fetched_clone.getConfigID(), "tasks: " + fetched_clone.countItems(), advice.second, advice.first)
+                ).orElse(new TaskGroupDataEntry(R.drawable.todos, fetched_clone.getConfigID(), "empty", new Task(), "empty"));
 
         viewHolder.logo.setImageResource(item.getImageResId());
         viewHolder.group_describe.setText(item.getDescribe());
         viewHolder.task_desc.setText(item.getTaskDesc());
 
         viewHolder.complete_current_task.setOnClickListener(view -> {
-            MemoryDataBase.INSTANCE.query(item.getGroupID(), item.getTaskContainerID(), TaskContainer::markAsDone);
+            MemoryDataBase.INSTANCE.query(item.getGroupID(), item.getTaskContainerID(), taskContainer -> {
+                if (taskContainer != null) {
+                    taskContainer.markAsDone().ifPresent(tobedeleted -> tobedeleted.deleteFromRealm());
+                }
+            });
+            TaskTreeManager fetched_again = (TaskTreeManager) getItem(position);
+            TaskGroupDataEntry item2 =
+                    fetched_again.advice().map(advice ->
+                            new TaskGroupDataEntry(R.drawable.todos, fetched_again.getConfigID(), "tasks: " + fetched_again.countItems(), advice.second, advice.first)
+                    ).orElse(new TaskGroupDataEntry(R.drawable.todos, fetched_again.getConfigID(), "empty", new Task(), "empty"));
+
+            viewHolder.logo.setImageResource(item2.getImageResId());
+            viewHolder.group_describe.setText(item2.getDescribe());
+            viewHolder.task_desc.setText(item2.getTaskDesc());
             this.notifyDataSetChanged();
         });
 

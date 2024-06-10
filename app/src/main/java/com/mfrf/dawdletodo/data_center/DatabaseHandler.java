@@ -28,9 +28,9 @@ public class DatabaseHandler {
 
     public static void addTaskGroup(TaskTreeManager manager) {
         Realm defaultInstance = Realm.getDefaultInstance();
-        defaultInstance.beginTransaction();
-        defaultInstance.copyToRealmOrUpdate(manager);
-        defaultInstance.commitTransaction();
+        defaultInstance.executeTransaction(t -> {
+            t.copyToRealmOrUpdate(manager);
+        });
         defaultInstance.close();
     }
 

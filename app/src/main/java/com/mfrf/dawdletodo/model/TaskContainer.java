@@ -97,6 +97,8 @@ public class TaskContainer extends RealmObject {
         if (this.isAtomic()) {
             assert nullableTask != null;
             return Optional.of(nullableTask);
+        } else if (this.childs.isEmpty()) {
+            return Optional.empty();
         } else {
             return peek().peek_task();
         }
@@ -112,13 +114,20 @@ public class TaskContainer extends RealmObject {
         }
     }
 
-    public void markAsDone() {
+    public Optional<TaskContainer> markAsDone() {//not empty: item should be delete
         if (this.isAtomic()) {
             this.nullableTask.incCompleteTimes();
+            if (this.nullableTask.getExpected_complete_times() <= nullableTask.getCompleteTimes()) {
+                return Optional.of(this);
+            }
+            return Optional.empty();
         } else {
             TaskContainer poll = this.peek();
-            poll.markAsDone();
-            this.childs.add(poll);
+            if (poll != null) {
+                return poll.markAsDone();
+            } else {
+                return Optional.of(this); // while nothing left , drop self
+            }
         }
     }
 

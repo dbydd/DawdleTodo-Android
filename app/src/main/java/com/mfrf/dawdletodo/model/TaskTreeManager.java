@@ -60,4 +60,9 @@ public class TaskTreeManager extends RealmObject {
         return root.find(task_id);
     }
 
+    public void delete(String id_to_be_delete) {
+        root.find(id_to_be_delete).deleteFromRealm();
+    }
+
+
 }

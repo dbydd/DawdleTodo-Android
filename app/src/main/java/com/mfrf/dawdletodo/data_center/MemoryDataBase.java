@@ -32,7 +32,7 @@ public enum MemoryDataBase {
 //        }
 //    };
 
-    {
+    static {
         TaskTreeManager test = new TaskTreeManager("test");
         try {
             //functional programming time!!!!!
@@ -73,6 +73,7 @@ public enum MemoryDataBase {
             return Optional.empty();
         }, Optional.empty());
     }
+
 
     public boolean add_task_container(TaskContainer g, String parent_node, String group_id) {
 
