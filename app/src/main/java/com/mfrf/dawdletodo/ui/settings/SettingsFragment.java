@@ -39,7 +39,7 @@ public class SettingsFragment extends Fragment {
     }
 
     private <V> void attachConfigListener(int id, Function<String, V> mapper, Method consumer) throws InvocationTargetException, IllegalAccessException {
-        ((EditText) this.getView().findViewById(id)).addTextChangedListener(new TextWatcher() {
+        ((EditText) this.binding.getRoot().findViewById(id)).addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 // donothing
