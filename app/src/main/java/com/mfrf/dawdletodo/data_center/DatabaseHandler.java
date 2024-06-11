@@ -53,6 +53,7 @@ public class DatabaseHandler {
 //    }
 
     public static void operationConfig(String configName, Consumer<Configuration> operator) { //Configuration only had primitive value
+        //todo fixme!
         Realm defaultInstance = Realm.getDefaultInstance();
         if (!defaultInstance.isEmpty()) {
             if (defaultInstance.where(Configuration.class).equalTo("name", configName).findFirst() == null) {
