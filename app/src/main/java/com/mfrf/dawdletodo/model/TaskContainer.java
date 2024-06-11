@@ -84,11 +84,16 @@ public class TaskContainer extends RealmObject {
     public Integer priority() {
         if (this.isAtomic()) {
 
-            int ret = PriorityModifiers.SimpleDeadlinePriorityModifier(getNullableTask().getInitial_priority(), getNullableTask().getBegin_date(), getNullableTask().getEnd_date(), LocalDate.now());
-            if (!getNullableTask().isInfini_long()) {
-                ret = PriorityModifiers.SimpleCompleteTimeModifier(ret, getNullableTask().getExpected_complete_times(), getNullableTask().getCompleteTimes());
-            }
-            return ret;
+            return PriorityModifiers.SimpleCompleteTimeModifier(
+                    PriorityModifiers.SimpleDeadlinePriorityModifier(
+                            getNullableTask().getInitial_priority(),
+                            getNullableTask().getBegin_date(),
+                            getNullableTask().getEnd_date(),
+                            LocalDate.now()
+                    ),
+                    getNullableTask().getExpected_complete_times(),
+                    getNullableTask().getCompleteTimes()
+            );
         }
         return this.peek().priority();
     }
