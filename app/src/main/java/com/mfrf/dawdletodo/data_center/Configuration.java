@@ -11,7 +11,7 @@ public class Configuration extends RealmObject {
     @PrimaryKey
     private UUID id;
     public String name; //just for future more extensions
-    private int auto_save_interval;
+    private int default_time_limit_offset;
 
     public Configuration() {
         this("default");
@@ -20,15 +20,15 @@ public class Configuration extends RealmObject {
     public Configuration(String name) {
         this.id = UUID.randomUUID();
         this.name = name;
-        auto_save_interval = 60;
+        default_time_limit_offset = 30;
     }
 
-    public int getAuto_save_interval() {
-        return auto_save_interval;
+    public int getDefault_time_limit_offset() {
+        return default_time_limit_offset;
     }
 
-    public void setAuto_save_interval(int auto_save_interval) {
-        this.auto_save_interval = auto_save_interval;
+    public void setDefaultTimeLimitOffset(int default_time_limit_offset) {
+        this.default_time_limit_offset = default_time_limit_offset;
     }
 
     public String getName() {

@@ -30,7 +30,7 @@ public class SettingsFragment extends Fragment {
         binding = FragmentSettingsBinding.inflate(inflater, container, false);
 
         try {
-            attachConfigListener(R.id.setting_save_interval, Integer::parseInt, Configuration.class.getDeclaredMethod("setAuto_save_interval", int.class));
+            attachConfigListener(R.id.setting_time_limit_offset, Integer::parseInt, Configuration.class.getDeclaredMethod("setDefaultTimeLimitOffset", int.class));
         } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
