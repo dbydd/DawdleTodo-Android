@@ -7,7 +7,6 @@ import com.mfrf.dawdletodo.exceptions.AddTaskError;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.PriorityQueue;
@@ -92,7 +91,8 @@ public class TaskContainer extends RealmObject {
                             LocalDate.now()
                     ),
                     getNullableTask().getExpected_complete_times(),
-                    getNullableTask().getCompleteTimes()
+                    getNullableTask().getCompleteTimes(),
+                    getNullableTask().isInfini_long()
             );
         }
         return this.peek().priority();
@@ -117,7 +117,11 @@ public class TaskContainer extends RealmObject {
         if (this.isAtomic()) {
             return this;
         } else {
-            PriorityQueue<TaskContainer> childs = new PriorityQueue<>(Comparator.comparingInt(TaskContainer::priority));
+            PriorityQueue<TaskContainer> childs = new PriorityQueue<>((o1, o2) -> {
+                Integer left = o1.priority();
+                Integer right = o2.priority();
+                return -(right - left); //优先级越大，优先级越小(x)
+            });
             childs.addAll(this.getChilds()); //actually store a ref, so it's ok!
             return childs.peek();
         }
