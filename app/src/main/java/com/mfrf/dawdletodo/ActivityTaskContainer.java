@@ -30,7 +30,11 @@ public class ActivityTaskContainer extends BasicActivityForConvince {
                 intent.putExtra("group", group_id);
             }, AddTaskActivity.class));
         });
+    }
 
-
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        ((TaskContainerAdapter) ((ListView) this.findViewById(R.id.task_container_groups)).getAdapter()).notifyDataSetChanged();
     }
 }

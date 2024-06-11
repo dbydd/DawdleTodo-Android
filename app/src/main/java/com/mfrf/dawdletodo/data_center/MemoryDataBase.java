@@ -32,39 +32,39 @@ public enum MemoryDataBase {
 //        }
 //    };
 
-    static {
-        TaskTreeManager test = new TaskTreeManager("test");
-        try {
-            //functional programming time!!!!!
-            test
-                    .addTo("root",
-                            new TaskContainer("test_prio",
-                                    new TaskContainer("test_daily_task",
-                                            new TaskContainer(new Task("test_single_task_in_daily_task", "balabala", 114, LocalDate.now(), LocalDate.now(), Integer.MAX_VALUE)),
-                                            new TaskContainer("test_prio_task_in_daily_task",
-                                                    new TaskContainer("test_prio_task_in_prio_task",
-                                                            new TaskContainer(new Task("test_single_task_in_prio_prio", "eaaaaaaa", 514, LocalDate.now(), LocalDate.now(), Integer.MAX_VALUE)),
-                                                            new TaskContainer(new Task("test_single_task_in_prio_prio_2", "henghenghengaaaaaa", 1919, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 1), 16))
-                                                    ),
-                                                    new TaskContainer(new Task("test_single_task_in_prio", "mulimomuli", 810, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 1), 24))
-                                            )
-                                    )
-                            ))
-                    .addTo("root",
-                            new TaskContainer("test_daily_task_2",
-                                    new TaskContainer(new Task("test_single_task_in_daily_2", "mulimomuli", 114514, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 1), Integer.MAX_VALUE)),
-                                    new TaskContainer(new Task("test_single_task_in_daily_3", "mulimomuli", 1919, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 1), Integer.MAX_VALUE))
-                            )
-                    )
-                    .addTo("test_daily_task_2",
-                            new TaskContainer(new Task("test_single_task_add_later", "mulimomuli", 810, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 1), Integer.MAX_VALUE))
-                    );
-        } catch (AddTaskError e) {
-            throw new RuntimeException(e);
-        }
-        DatabaseHandler.addTaskGroup(test);
-
-    }
+//    static {
+//        TaskTreeManager test = new TaskTreeManager("test");
+//        try {
+//            //functional programming time!!!!!
+//            test
+//                    .addTo("root",
+//                            new TaskContainer("test_prio",
+//                                    new TaskContainer("test_daily_task",
+//                                            new TaskContainer(new Task("test_single_task_in_daily_task", "balabala", 114, LocalDate.now(), LocalDate.now(), Integer.MAX_VALUE)),
+//                                            new TaskContainer("test_prio_task_in_daily_task",
+//                                                    new TaskContainer("test_prio_task_in_prio_task",
+//                                                            new TaskContainer(new Task("test_single_task_in_prio_prio", "eaaaaaaa", 514, LocalDate.now(), LocalDate.now(), Integer.MAX_VALUE)),
+//                                                            new TaskContainer(new Task("test_single_task_in_prio_prio_2", "henghenghengaaaaaa", 1919, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 1), 16))
+//                                                    ),
+//                                                    new TaskContainer(new Task("test_single_task_in_prio", "mulimomuli", 810, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 1), 24))
+//                                            )
+//                                    )
+//                            ))
+//                    .addTo("root",
+//                            new TaskContainer("test_daily_task_2",
+//                                    new TaskContainer(new Task("test_single_task_in_daily_2", "mulimomuli", 114514, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 1), Integer.MAX_VALUE)),
+//                                    new TaskContainer(new Task("test_single_task_in_daily_3", "mulimomuli", 1919, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 1), Integer.MAX_VALUE))
+//                            )
+//                    )
+//                    .addTo("test_daily_task_2",
+//                            new TaskContainer(new Task("test_single_task_add_later", "mulimomuli", 810, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 1), Integer.MAX_VALUE))
+//                    );
+//        } catch (AddTaskError e) {
+//            throw new RuntimeException(e);
+//        }
+//        DatabaseHandler.addTaskGroup(test);
+//
+//    }
 
     public void remove_task_group(String id) {
         DatabaseHandler.operationTaskGroups(id, manager -> {

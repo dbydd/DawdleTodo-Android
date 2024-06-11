@@ -96,16 +96,20 @@ public class TaskGroupAdapter extends BaseAdapter {
 
         viewHolder.complete_current_task.setOnClickListener(view -> {
             ((Consumer<Consumer<TaskTreeManager>>) getItem(position)).accept(manager -> {
-                TaskContainer taskContainer = manager.find(viewHolder.task_to_be_done.getText().toString());
-                taskContainer.markAsDone().ifPresent(to_be_del -> to_be_del.deleteFromRealm());
-                manager.advice()
-                        .map(advice -> new TaskGroupDataEntry(R.drawable.todos, manager.getConfigID(), "tasks: " + manager.countItems(), advice.second, advice.first))
-                        .or(() -> Optional.of(new TaskGroupDataEntry(R.drawable.todos, manager.getConfigID(), "empty", new Task(), "empty")))
-                        .ifPresent(advice_once_more -> {
-                            viewHolder.logo.setImageResource(advice_once_more.getImageResId());
-                            viewHolder.task_to_be_done.setText(advice_once_more.getTaskTobeDone());
-                            viewHolder.desc_of_task.setText(advice_once_more.getTaskDesc());
-                        });
+                if (!viewHolder.task_to_be_done.getText().toString().equals("empty")) {
+                    TaskContainer taskContainer = manager.find(viewHolder.task_to_be_done.getText().toString());
+                    taskContainer.markAsDone().ifPresent(to_be_del -> to_be_del.deleteFromRealm());
+                    manager.advice()
+                            .map(advice -> new TaskGroupDataEntry(R.drawable.todos, manager.getConfigID(), "tasks: " + manager.countItems(), advice.second, advice.first))
+                            .or(() -> Optional.of(new TaskGroupDataEntry(R.drawable.todos, manager.getConfigID(), "empty", new Task(), "empty")))
+                            .ifPresent(advice_once_more -> {
+                                viewHolder.logo.setImageResource(advice_once_more.getImageResId());
+                                viewHolder.task_to_be_done.setText(advice_once_more.getTaskTobeDone());
+                                viewHolder.desc_of_task.setText(advice_once_more.getTaskDesc());
+                            });
+                }else {
+
+                }
             });
         });
 

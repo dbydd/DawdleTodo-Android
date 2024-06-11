@@ -117,7 +117,7 @@ public class TaskContainer extends RealmObject {
     public Optional<TaskContainer> markAsDone() {//not empty: item should be delete
         if (this.isAtomic()) {
             this.getNullableTask().incCompleteTimes();
-            if (this.getNullableTask().getExpected_complete_times() <= getNullableTask().getCompleteTimes()) {
+            if (!this.getNullableTask().isInfini_long() && this.getNullableTask().getExpected_complete_times() <= getNullableTask().getCompleteTimes()) {
                 return Optional.ofNullable(this);
             }
             return Optional.empty();

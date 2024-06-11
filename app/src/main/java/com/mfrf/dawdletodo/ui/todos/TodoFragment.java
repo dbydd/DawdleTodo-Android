@@ -11,7 +11,6 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mfrf.dawdletodo.data_center.DatabaseHandler;
@@ -25,9 +24,6 @@ public class TodoFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        HomeViewModel homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
-
         binding = FragmentTodoBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
@@ -66,5 +62,11 @@ public class TodoFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((TaskGroupAdapter) this.binding.todoGroups.getAdapter()).notifyDataSetChanged();
     }
 }

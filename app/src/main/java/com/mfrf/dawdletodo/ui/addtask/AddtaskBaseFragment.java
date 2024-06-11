@@ -19,12 +19,13 @@ public abstract class AddtaskBaseFragment extends Fragment {
         Editable text = in.getText();
         if (text.toString().isBlank()) {
             if (ShouldNonnull) {
-                Toast.makeText(this.getContext(), in.getHint() + "cannot be empty", Toast.LENGTH_SHORT).show();
                 return Optional.empty();
             } else {
+                Toast.makeText(this.getContext(), in.getHint() + "cannot be empty", Toast.LENGTH_SHORT).show();
                 Optional.of("");
             }
         }
         return Optional.of(text.toString());
     }
+
 }
