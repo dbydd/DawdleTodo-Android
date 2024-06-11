@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.FragmentActivity;
 
@@ -108,7 +109,7 @@ public class TaskGroupAdapter extends BaseAdapter {
                                 viewHolder.desc_of_task.setText(advice_once_more.getTaskDesc());
                             });
                 } else {
-
+                    Toast.makeText(this.context, "这个任务组是空的", Toast.LENGTH_SHORT).show();
                 }
             });
         });
