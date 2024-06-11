@@ -42,14 +42,13 @@ public class TodoFragment extends Fragment {
 
         FloatingActionButton addTaskGroup = binding.addTaskGroup;
         addTaskGroup.setOnClickListener(v -> {
-            showInputDialog();
-            taskGroupAdapter.notifyDataSetChanged();
+            showInputDialog(taskGroupAdapter);
         });
 
         return root;
     }
 
-    private void showInputDialog() { //copy and modified from https://www.cnblogs.com/gzdaijie/p/5222191.html
+    private void showInputDialog(TaskGroupAdapter taskGroupAdapter) { //copy and modified from https://www.cnblogs.com/gzdaijie/p/5222191.html
         /*@setView 装入一个EditView
          */
         final EditText editText = new EditText(this.getContext());
@@ -58,6 +57,7 @@ public class TodoFragment extends Fragment {
         inputDialog.setTitle("请给出新建任务组的名字").setView(editText);
         inputDialog.setPositiveButton("确定", (dialog, which) -> {
             DatabaseHandler.addTaskGroup(new TaskTreeManager(editText.getText().toString()));
+            taskGroupAdapter.notifyDataSetChanged();
         }).show();
     }
 
