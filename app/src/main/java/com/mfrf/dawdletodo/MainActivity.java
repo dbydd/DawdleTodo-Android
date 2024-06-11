@@ -1,12 +1,8 @@
 package com.mfrf.dawdletodo;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.Menu;
-import android.view.View;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -14,12 +10,8 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
 import com.mfrf.dawdletodo.databinding.ActivityMainBinding;
 import com.mfrf.dawdletodo.utils.BasicActivityForConvince;
-
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class MainActivity extends BasicActivityForConvince {
 
@@ -39,7 +31,7 @@ public class MainActivity extends BasicActivityForConvince {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.todos, R.id.clock, R.id.settings)
+                R.id.todos, R.id.settings)
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);

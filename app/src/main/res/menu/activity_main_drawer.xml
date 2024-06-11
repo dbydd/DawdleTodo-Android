@@ -9,10 +9,6 @@
             android:icon="@drawable/todos"
             android:title="@string/todos" />
         <item
-            android:id="@+id/clock"
-            android:icon="@drawable/clock"
-            android:title="@string/clock" />
-        <item
             android:id="@+id/settings"
             android:icon="@drawable/settings"
             android:title="@string/settings" />

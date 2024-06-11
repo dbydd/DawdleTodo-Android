@@ -12,12 +12,6 @@
         tools:layout="@layout/fragment_todo" />
 
     <fragment
-        android:id="@+id/clock"
-        android:name="com.mfrf.dawdletodo.ui.clock.ClockFragment"
-        android:label="@string/clock"
-        tools:layout="@layout/fragment_clock" />
-
-    <fragment
         android:id="@+id/settings"
         android:name="com.mfrf.dawdletodo.ui.settings.SettingsFragment"
         android:label="@string/settings"
