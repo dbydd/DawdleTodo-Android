@@ -107,7 +107,7 @@ public class TaskGroupAdapter extends BaseAdapter {
                                 viewHolder.task_to_be_done.setText(advice_once_more.getTaskTobeDone());
                                 viewHolder.desc_of_task.setText(advice_once_more.getTaskDesc());
                             });
-                }else {
+                } else {
 
                 }
             });

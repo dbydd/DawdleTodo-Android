@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.PriorityQueue;
+import java.util.UUID;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -21,6 +22,7 @@ import io.realm.annotations.RealmClass;
 public class TaskContainer extends RealmObject {
 
     @PrimaryKey
+    private UUID uuid = UUID.randomUUID();
     private String id = "placeholder";
 
     private RealmList<TaskContainer> childs = new RealmList<>();
@@ -30,11 +32,13 @@ public class TaskContainer extends RealmObject {
     public TaskContainer(String id, TaskContainer... childs) {
         this.id = id;
         this.getChilds().addAll(Arrays.stream(childs).toList());
+        this.uuid = UUID.randomUUID();
     }
 
     public TaskContainer(Task task) {
         this.id = task.getId();
         this.nullableTask = task;
+        this.uuid = UUID.randomUUID();
     }
 
     public TaskContainer() {

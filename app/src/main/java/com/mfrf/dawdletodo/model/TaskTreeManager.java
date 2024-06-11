@@ -6,6 +6,7 @@ import com.mfrf.dawdletodo.exceptions.AddTaskError;
 
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.UUID;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -14,17 +15,20 @@ import io.realm.annotations.RealmClass;
 @RealmClass
 public class TaskTreeManager extends RealmObject {
     @PrimaryKey
+    private UUID uuid;
     private String configID;
     private TaskContainer root;
 
     public TaskTreeManager(TaskContainer root, String configID) {
         this.root = root;
         this.configID = configID;
+        this.uuid = UUID.randomUUID();
     }
 
     public TaskTreeManager(String configID) {
         this.configID = configID;
         this.root = new TaskContainer("root");
+        this.uuid = UUID.randomUUID();
     }
 
     public TaskTreeManager() {

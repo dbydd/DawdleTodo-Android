@@ -5,6 +5,7 @@ import com.mfrf.dawdletodo.utils.TypeConverter;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.UUID;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -13,6 +14,7 @@ import io.realm.annotations.RealmClass;
 @RealmClass
 public class Task extends RealmObject implements Serializable, Cloneable {
     @PrimaryKey
+    private UUID uuid;
     private String id;
     private String description;
     private int initial_priority;
@@ -32,6 +34,7 @@ public class Task extends RealmObject implements Serializable, Cloneable {
         end_date = endDate;
         expected_complete_times = expectedCompleteTime;
         infini_long = expectedCompleteTime <= 0;
+        this.uuid = UUID.randomUUID();
     }
 
     public Task() {
