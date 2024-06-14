@@ -95,7 +95,8 @@ public class TaskContainer extends RealmObject {
                     getNullableTask().isInfini_long()
             );
         }
-        return this.peek().priority();
+        TaskContainer peek = this.peek();
+        return peek == null ? 0 : peek.priority();
     }
 
     public String getId() {
